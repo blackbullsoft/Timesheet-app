@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "464352998900",
+    "project_id": "timesheet-f9488",
+    "storage_bucket": "timesheet-f9488.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:464352998900:android:2a2aced105ba3348d9f5a1",
+        "android_client_info": {
+          "package_name": "com.timesheet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAt53QphJ0kE3GrvgpcGTSHqJpZQm08akc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
