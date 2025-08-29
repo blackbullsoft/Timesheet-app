@@ -61,6 +61,71 @@ function* loginUserSaga(action) {
   }
 }
 
+function* socialLogin(action) {
+  console.log('Social ogin', action);
+  try {
+    const dataPayload = {
+      googleToken: action.payload.googleToken,
+      userInfo: action.payload.userInfo,
+    };
+    console.log('Insde try', dataPayload);
+    const response = yield call(
+      axios.post,
+      `${API_BASE_URL}/user/auth/google/mobile`,
+      {
+        dataPayload,
+      },
+    );
+
+    console.log('Social login', response);
+
+    // const token = response.data.token;
+    // const data = jwtDecode(token);
+
+    // yield call(storeToken, token);
+    yield put({type: 'USER_SOCIAL_LOGIN_REQUEST_SUCCESS', payload: data});
+
+    const userAgent = yield call(DeviceInfo.getUserAgent);
+    const deviceType =
+      Platform.OS === 'android' ? 1 : Platform.OS === 'ios' ? 2 : 3;
+
+    const fcmResponse = yield call(
+      axios.get,
+      `${API_BASE_URL}/user/fcm?userId=${data?.userId}`,
+    );
+    const existingFcmTokens = fcmResponse.data || [];
+
+    const isFcmTokenExists = existingFcmTokens.some(
+      item => item.fcm_token === action.payload.fcmToken,
+    );
+
+    if (!isFcmTokenExists) {
+      yield call(axios.post, `${API_BASE_URL}/user/fcm`, {
+        userId: data?.userId,
+        fcmToken: action.payload.fcmToken,
+        userAgent,
+        deviceType,
+      });
+    }
+
+    yield put(showToast('success', 'Login Successful', 'Welcome back!'));
+  } catch (error) {
+    console.log('Social Login serr', error);
+    yield put({
+      type: 'USER_SOCIAL_LOGIN_REQUEST_FAILURE',
+      payload: error?.response?.data?.error || 'Something went wrong!',
+    });
+
+    yield put(
+      showToast(
+        'error',
+        'Login Failed',
+        error?.response?.data?.error || 'Something went wrong!',
+      ),
+    );
+  }
+}
+
 function* signUpUserSaga(action) {
   try {
     yield call(axios.post, `${API_BASE_URL}/user/v2/register`, {
@@ -148,8 +213,58 @@ function* fogotPasswordEmailSendUserSaga(action) {
 
     console.log('Forgot password response:', response);
 
-    // ✅ Dispatch SUCCESS (different type!)
-    yield put({type: 'USER_FORGOT_PASSWORD_EMAIL_SUCCESS', payload: true});
+    // ✅ Dispatch a distinct SUCCESS action
+    yield put({
+      type: 'USER_FORGOT_PASSWORD_EMAIL_SUCCESS',
+      payload: {
+        data: response.data, // your actual data
+        status: response.status, // status code
+        message: response.data.message,
+      },
+    });
+
+    yield put(
+      showToast(
+        'success',
+        'Email Sent',
+        'Password reset link sent to your email.',
+      ),
+    );
+    return response;
+  } catch (error) {
+    yield put({
+      type: 'USER_FORGOT_PASSWORD_EMAIL_FAILURE',
+      payload: error?.response?.data?.error || 'Something went wrong!',
+    });
+
+    yield put(
+      showToast(
+        'error',
+        'Reset Failed',
+        error?.response?.data?.error || 'Something went wrong!',
+      ),
+    );
+  }
+}
+
+function* resetPassword(action) {
+  console.log('Reset passwrd', action);
+  try {
+    const response = yield call(
+      axios.post,
+      `${API_BASE_URL}/user/reset-password`,
+      {
+        email: action.payload.email,
+        resetCode: action.payload.resetCode,
+        newPassword: action.payload.newPassword,
+        confirmPassword: action.payload.confirmPassword,
+      },
+    );
+
+    console.log('resetPassword response:', response);
+
+    // ✅ Dispatch a distinct SUCCESS action
+    yield put({type: 'USER_RESET_PASSWORD_SUCCESS', payload: response});
 
     yield put(
       showToast(
@@ -160,7 +275,7 @@ function* fogotPasswordEmailSendUserSaga(action) {
     );
   } catch (error) {
     yield put({
-      type: 'USER_FORGOT_PASSWORD_EMAIL_FAILURE',
+      type: 'USER_RESET_PASSWORD_FAILURE',
       payload: error?.response?.data?.error || 'Something went wrong!',
     });
 
@@ -183,4 +298,6 @@ export default function* authSaga() {
     'USER_FORGOT_PASSWORD_EMAIL',
     fogotPasswordEmailSendUserSaga,
   );
+  yield takeLatest('USER_RESET_PASSWORD', resetPassword);
+  yield takeLatest('USER_SOCIAL_LOGIN_REQUEST', socialLogin);
 }

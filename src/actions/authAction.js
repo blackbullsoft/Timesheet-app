@@ -2,6 +2,11 @@ export const loginUser = (email, password, fcmToken) => ({
   type: 'USER_LOGIN_REQUEST',
   payload: {email, password, fcmToken},
 });
+
+export const socialLogin = (googleToken, userInfo) => ({
+  type: 'USER_SOCIAL_LOGIN_REQUEST',
+  payload: {googleToken, userInfo},
+});
 export const alreadyLoginUser = () => ({
   type: 'USER_LOGIN_ALREADY',
 });
@@ -18,3 +23,14 @@ export const forgotPasswordEmail = email => ({
   type: 'USER_FORGOT_PASSWORD_EMAIL',
   payload: {email},
 });
+
+export const resetPassword = (
+  email,
+  resetCode,
+  newPassword,
+  confirmPassword,
+) => ({
+  type: 'USER_RESET_PASSWORD',
+  payload: {email, resetCode, newPassword, confirmPassword},
+});
+export const clearEmail = () => ({type: 'CLEAR_EMAIL'});

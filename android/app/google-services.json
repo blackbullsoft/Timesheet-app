@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "464352998900",
-    "project_id": "timesheet-f9488",
-    "storage_bucket": "timesheet-f9488.firebasestorage.app"
+    "project_number": "201479043285",
+    "project_id": "timesheet-11353",
+    "storage_bucket": "timesheet-11353.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:464352998900:android:2a2aced105ba3348d9f5a1",
+        "mobilesdk_app_id": "1:201479043285:android:7ed720c1a7cf417f9a4a5c",
         "android_client_info": {
           "package_name": "com.timesheet"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "201479043285-0d4iovqdmi0bjj5f9sppanutlab87828.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.timesheet",
+            "certificate_hash": "4d06d8a58e51078ffab8f69d28a9d3a2192abb7a"
+          }
+        },
+        {
+          "client_id": "201479043285-agu37ueut0csu6nc35ude3uom7u9hb6g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyAt53QphJ0kE3GrvgpcGTSHqJpZQm08akc"
+          "current_key": "AIzaSyC_8UDpJTQnRBWZpBUAJiGW7PXNZWzQYZA"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "201479043285-agu37ueut0csu6nc35ude3uom7u9hb6g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
