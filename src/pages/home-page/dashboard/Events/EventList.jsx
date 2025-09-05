@@ -239,6 +239,7 @@ const EventsList = ({route}) => {
             renderItem={({item}) => {
               const dateKey = item.format('YYYY-MM-DD');
               const eventList = events[dateKey] || [];
+              console.log('eventList', eventList);
 
               return (
                 <View style={styles.scheduleItem}>
@@ -287,6 +288,7 @@ const EventsList = ({route}) => {
                               <>{event.timing}</>
                             )}
                           </Text>
+
                           {event?.isFullDay && (
                             <Text style={styles.eventBody}>All Day</Text>
                           )}
@@ -579,7 +581,8 @@ const styles = StyleSheet.create({
     bottom: 10,
   },
   eventTitle: {
-    color: '#FFFFFF',
+    // color: '#FFFFFF',
+    color: '#000000',
     fontSize: 10,
     fontWeight: 600,
   },

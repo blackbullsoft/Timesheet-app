@@ -45,7 +45,15 @@ const Card = ({item}) => {
         navigation.navigate('Event', {timesheetId: item?.timesheet_id})
       }>
       <Image source={Shift} />
-      <Text style={styles.lable}>{item?.body}</Text>
+      <Text
+        style={[
+          styles.lable,
+          {
+            width: '88%',
+          },
+        ]}>
+        {item?.body}
+      </Text>
     </Pressable>
   );
 };
@@ -274,7 +282,8 @@ const styles = StyleSheet.create({
     elevation: 1,
     width: '90%',
     paddingLeft: 16,
-    height: 40,
+    // height: 40,
+    // flexWrap: 'wrap',
     alignItems: 'center',
     borderWidth: 1,
     alignSelf: 'center',

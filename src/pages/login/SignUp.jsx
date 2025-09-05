@@ -47,6 +47,7 @@ export default function SignUp() {
       );
       return;
     }
+    console.log('fcmToken', fcmToken, email, password);
     dispatch(loginUser(email, password, fcmToken));
   };
 

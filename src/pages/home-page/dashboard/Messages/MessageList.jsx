@@ -8,12 +8,14 @@ import {
   Pressable,
 } from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import NoMessage from './NoMessage';
 import LoadingAnimation from '../../../../component/Loader';
 import {useNavigation} from '@react-navigation/native';
+import {chatList} from '../../../../actions/chatAction';
 const SearchIcon = require('../../../../assets/images/icon/search.png');
+
 const data = [
   {
     name: 'Vinay',
@@ -45,7 +47,10 @@ const Card = item => {
   return (
     <Pressable
       style={styles.card}
-      onPress={() => navigation.navigate('Message')}>
+      onPress={
+        () => navigation.navigate('Message', {conversationData: item})
+        // console.log('item', item?.item?.participants[1]?.username)
+      }>
       <View style={styles.left}>
         <Image
           source={{
@@ -54,10 +59,10 @@ const Card = item => {
           style={{width: 44, height: 44, borderRadius: 50}}
         />
         <View>
-          <Text style={styles.lable}>{item?.item?.name}</Text>
-          <Text style={styles.value}>
-            {item.item?.reply}: {item?.item?.message}
+          <Text style={styles.lable}>
+            {item?.item?.participants[1]?.username}
           </Text>
+          <Text style={styles.value}>{item?.item?.last_message}</Text>
         </View>
       </View>
       {item?.item?.min && (
@@ -73,11 +78,38 @@ const Card = item => {
 };
 export default function MessageList() {
   const dispatch = useDispatch();
-  const loading = false;
+  const [chatData, setChatData] = useState([]);
+  // const {chat} = useSelector(state => state.chat);
+  const {chatList: chats, loading, error} = useSelector(state => state.chat);
+
+  const [conversations, setConversations] = useState([]);
+  // const loading = false;
+
+  const getChatList = () => {
+    const respone = dispatch(chatList());
+    console.log('chat list', chats);
+  };
+
+  const searchUser = text => {
+    const filterData = chats.filter(item =>
+      item.participants[1]?.username.toLowerCase().includes(text.toLowerCase()),
+    );
+    setChatData(filterData);
+    console.log('filterData', filterData);
+  };
   // const { coworkers,loading } = useSelector((state) => state.coworkers);
   useEffect(() => {
+    getChatList();
+
     // dispatch(fetchCoworkersList())
   }, []);
+
+  useEffect(() => {
+    if (chats) {
+      setChatData(chats);
+    }
+  }, [chats]);
+  console.log('chatData', chatData);
   return (
     <View>
       <View style={styles.overlapBox}>
@@ -86,6 +118,7 @@ export default function MessageList() {
           placeholder="Quickly find a conversation..."
           style={styles.inputStyle}
           placeholderTextColor="#555555"
+          onChangeText={text => searchUser(text)}
         />
       </View>
       {loading ? (
@@ -99,9 +132,9 @@ export default function MessageList() {
           ) : (
             <View style={{marginTop: 22}}>
               <FlatList
-                data={data}
+                data={chatData}
                 renderItem={({item}) => <Card item={item} />}
-                keyExtractor={item => item.id.toString()}
+                keyExtractor={item => item.conversation_id.toString()}
               />
             </View>
           )}

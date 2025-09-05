@@ -12,6 +12,7 @@ import {showToast} from './src/actions/toastAction';
 import {useDispatch} from 'react-redux';
 import {createNavigationContainerRef} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import ScrollVIewComp from './src/pages/login/ScrollVIewComp';
 
 export const navigationRef = createNavigationContainerRef();
 const Stack = createStackNavigator();
@@ -96,6 +97,8 @@ export default function App() {
       <NavigationContainer ref={navigationRef}>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="ScrollView" component={ScrollVIewComp} />
+
           <Stack.Screen
             name="SignUp"
             component={SignUp}

@@ -15,6 +15,7 @@ function* loginUserSaga(action) {
       password: action.payload.password,
     });
 
+    console.log('Login response:', response);
     const token = response.data.token;
     const data = jwtDecode(token);
 

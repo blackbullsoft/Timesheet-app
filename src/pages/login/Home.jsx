@@ -73,6 +73,7 @@ export default function Home() {
   }, []);
   const handleNavigateToLogin = value => {
     navigation.navigate('SignUp', {isLogin: value});
+    // navigation.navigate('ScrollView');
   };
   useEffect(() => {
     dispatch(alreadyLoginUser());
