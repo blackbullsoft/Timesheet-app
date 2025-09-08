@@ -6,10 +6,15 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Keyboard,
+  TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {TextInput} from 'react-native-gesture-handler';
+import {useDispatch, useSelector} from 'react-redux';
+import {addComment, fetchComment} from '../../../../actions/newsfeedAction';
+import {formatDateTime} from '../../../../utils/constant';
 const Eyes = require('../../../../assets/images/icon/eyes.png');
 const Like1 = require('../../../../assets/images/icon/like1.png');
 const Comment1 = require('../../../../assets/images/icon/comment1.png');
@@ -17,10 +22,16 @@ const Like = require('../../../../assets/images/icon/like.png');
 const Comment = require('../../../../assets/images/icon/comment.png');
 const Pin = require('../../../../assets/images/icon/pin.png');
 
-export default function NewFeedPage() {
+export default function NewFeedPage({route}) {
   const navigation = useNavigation();
   const [inputValue, setInputValue] = useState('');
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const dispatch = useDispatch();
+  const [newsFeedData, setNewsFeedData] = useState(
+    route.params?.newsData || null,
+  );
+  //
+  const {commentList, like} = useSelector(state => state.newsFeed);
 
   const isKeyboardOpen = Keyboard.isVisible();
   useEffect(() => {
@@ -30,6 +41,18 @@ export default function NewFeedPage() {
     };
   }, [navigation]);
 
+  const addTheComment = () => {
+    console.log('inputValue', inputValue, newsFeedData?.id);
+    if (inputValue.trim() === '') {
+      return;
+    }
+    dispatch(addComment(inputValue, newsFeedData?.id));
+    setInputValue('');
+  };
+
+  const fetchTheComment = () => {
+    dispatch(fetchComment(newsFeedData?.id));
+  };
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setKeyboardVisible(true);
@@ -44,7 +67,76 @@ export default function NewFeedPage() {
     };
   }, []);
 
-  console.log('isKeyboardOpen', keyboardVisible);
+  useEffect(() => {
+    fetchTheComment();
+  }, []);
+
+  const Card = ({item}) => {
+    return (
+      <>
+        <View
+          style={{
+            margin: 10,
+            paddingBottom: 10,
+            backgroundColor: '#FFFFFF',
+          }}>
+          <View style={styles.box}>
+            <View style={styles.left}>
+              {item?.profilePictureUrl ? (
+                <Image
+                  // source={{
+                  //   uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                  // }}
+                  source={{
+                    uri: item?.profilePictureUrl,
+                  }}
+                  style={styles.imageStyle}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.imageStyle,
+                    {
+                      backgroundColor: '#ecebebad',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 50,
+                      width: 44,
+                      height: 44,
+                    },
+                  ]}>
+                  {/* <Text>{item.commented_by?.split(' ')}</Text> */}
+                  <Text>
+                    {item.commented_by
+                      .split(' ')
+                      .map(word => word.charAt(0).toUpperCase())
+                      .join('')}
+                  </Text>
+                </View>
+              )}
+
+              <View>
+                <Text style={styles.lable}>{item?.commented_by}</Text>
+                <Text style={styles.lable}>{item?.comment}</Text>
+              </View>
+            </View>
+            <View style={{height: '100%'}}>
+              <Text style={styles.value}>
+                {formatDateTime(item?.created_at)}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.card}>
+            <Text style={styles.value}>{item?.content}</Text>
+          </View>
+          {/* <View style={styles.line}></View> */}
+        </View>
+        {/* <Text>dsjndsjnsjn</Text> */}
+      </>
+    );
+  };
+
+  console.log('isKeyboardOpen', commentList);
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -59,34 +151,40 @@ export default function NewFeedPage() {
           <View style={styles.box}>
             <View style={styles.left}>
               <Image
+                // source={{
+                //   uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                // }}
+
                 source={{
-                  uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                  uri: newsFeedData?.profilePictureUrl,
                 }}
                 style={styles.imageStyle}
               />
               <View>
-                <Text style={styles.lable}>Test Account</Text>
+                <Text style={styles.lable}>{newsFeedData?.username}</Text>
                 <Text style={styles.value}>Demo Conversation</Text>
               </View>
             </View>
             <View style={{height: '100%'}}>
-              <Text style={styles.value}>1:45 pm</Text>
+              <Text style={styles.value}>
+                {formatDateTime(newsFeedData?.created_at)}
+              </Text>
             </View>
           </View>
           <View style={styles.line}></View>
           <View style={styles.card}>
-            <Text style={styles.value}>
-              This is our first post for announcement
-            </Text>
+            <Text style={styles.value}>{newsFeedData?.content}</Text>
             <View style={styles.box1}>
               <View style={styles.left}>
                 <View style={styles.iconBox}>
                   <Image source={Like1} style={{width: 16, height: 16}} />
-                  <Text style={styles.value}>0</Text>
+                  <Text style={styles.value}>{newsFeedData?.total_likes}</Text>
                 </View>
                 <View style={styles.iconBox}>
                   <Image source={Comment1} style={{width: 16, height: 16}} />
-                  <Text style={styles.value}>0</Text>
+                  <Text style={styles.value}>
+                    {newsFeedData?.total_comments}
+                  </Text>
                 </View>
               </View>
               <View style={styles.right}>
@@ -121,10 +219,27 @@ export default function NewFeedPage() {
                 onChangeText={setInputValue}
               />
             </View>
-            <Text>Post</Text>
+            <TouchableOpacity onPress={addTheComment}>
+              <Text>Post</Text>
+            </TouchableOpacity>
           </View>
+          <ScrollView>
+            {commentList?.comments?.length > 0 &&
+              commentList?.comments?.map(item => (
+                <Card item={item} key={item.id} />
+                // <View key={item.id}>
+                //   <Text>dsjnjn</Text>
+                // </View>
+              ))}
+          </ScrollView>
         </View>
       </ScrollView>
+      {/* <FlatList
+        data={commentList?.comments}
+        renderItem={({item}) => <Card item={item} />}
+        keyExtractor={i => i.id}
+        contentContainerStyle={{paddingBottom: 20}}
+      /> */}
     </KeyboardAvoidingView>
   );
 }
@@ -141,7 +256,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '95%',
     marginHorizontal: 'auto',
-    paddingVertical: 16,
+    paddingTop: 16,
   },
   imageStyle: {
     width: 44,
@@ -171,7 +286,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '95%',
-    marginTop: 8,
+    // marginTop: 8,
     marginHorizontal: 'auto',
   },
   box1: {

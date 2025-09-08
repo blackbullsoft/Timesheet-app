@@ -36,8 +36,9 @@ function* newsFeedList() {
     });
   }
 }
-function* Messages(action) {
-  console.log('action.payload.conversationId', action.payload.conversationId);
+
+function* likeAndDislike(action) {
+  console.log('Like action payload', action.payload.newsFeedId);
   try {
     const token = yield call(getToken);
 
@@ -52,67 +53,105 @@ function* Messages(action) {
       },
     };
 
-    const response = yield call(
-      axios.get,
-      `${API_BASE_URL}/chat/conversations/messages/${action.payload.conversationId}`,
-      config,
-    );
-    const data = response?.data || [];
-    console.log('Fetch message', data);
-    yield put({type: 'FETCH_MESSAGE_SUCCESS', payload: data});
-  } catch (error) {
-    console.log(error);
-    yield put({
-      type: 'FETCH_MESSAGE_FAILED',
-      payload: error?.response?.data?.error || 'Something went wrong!',
-    });
-  }
-}
-
-function* sendMessage(action) {
-  console.log('action.payload', action.payload.messagBody);
-  try {
-    const token = yield call(getToken);
-
-    if (!token) {
-      throw new Error('No authentication token found');
-    }
-
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    };
-
-    // const response = yield call(
-    //   axios.post,
-    //   `${API_BASE_URL}/chat/conversations/messages`,
-    //   config,
-    // );
-
+    console.log('COnfig for newfeed', config);
     const response = yield call(
       axios.post,
-      `${API_BASE_URL}/chat/conversations/messages`,
-      {
-        conversation_id: action.payload.messagBody.conversation_id,
-        sender_id: action.payload.messagBody.sender_id,
-        message: action.payload.messagBody.message,
-      },
+      `${API_BASE_URL}/newsfeed/post/like/${action.payload.newsFeedId}`,
+      {},
       config,
     );
     const data = response?.data || [];
-    console.log('Send Message', data);
-    yield put({type: 'SEND_MESSAGE_SUCCESS', payload: data});
+    console.log('LIke message', data);
+    yield put({
+      type: 'LIKE_FEED_SUCCESS',
+      payload: {
+        newsFeedId: action.payload.newsFeedId, // keep track of which feed
+        isLiked: data.message?.includes('unliked') ? 0 : 1, // decide like/unlike
+      },
+    });
   } catch (error) {
     console.log(error);
     yield put({
-      type: 'SEND_MESSAGE_FAILED',
+      type: 'LIKE_FEED_FAILED',
       payload: error?.response?.data?.error || 'Something went wrong!',
     });
   }
 }
 
+function* addComment(action) {
+  console.log('addComment action payload', action.payload.content);
+  try {
+    const token = yield call(getToken);
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    console.log('COnfig for newfeed', config);
+    const response = yield call(
+      axios.post,
+      `${API_BASE_URL}/newsfeed/post/comment`,
+      {
+        feedId: action.payload.feedId,
+        comment: action.payload.content,
+      },
+      config,
+    );
+    const data = response?.data || [];
+    console.log('comment message', data);
+    yield put({type: 'COMMENT_FEED_SUCCESS', payload: data});
+  } catch (error) {
+    console.log(error);
+    yield put({
+      type: 'COMMENT_FEED_FAILED',
+      payload: error?.response?.data?.error || 'Something went wrong!',
+    });
+  }
+}
+function* fetchComment(action) {
+  console.log('fetchComment action payload', action.payload.feedId);
+  try {
+    const token = yield call(getToken);
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    console.log('Fetch comment config', config);
+    const response = yield call(
+      axios.get,
+      `${API_BASE_URL}/newsfeed/post/comment/${action.payload.feedId}`,
+      // {},
+      config,
+    );
+    const data = response?.data || [];
+    console.log('new feed', data, token);
+    yield put({type: 'FETCH_COMMENT_SUCCESS', payload: data});
+  } catch (error) {
+    console.log(error);
+    yield put({
+      type: 'FETCH_COMMENT_FAILED',
+      payload: error?.response?.data?.error || 'Something went wrong!',
+    });
+  }
+}
 export default function* newsFeedSaga() {
   yield takeLatest('FETCH_FEED_REQUEST', newsFeedList);
+  yield takeLatest('LIKE_FEED_REQUEST', likeAndDislike);
+  yield takeLatest('COMMENT_FEED_REQUEST', addComment);
+  yield takeLatest('FETCH_COMMENT_REQUEST', fetchComment);
 }

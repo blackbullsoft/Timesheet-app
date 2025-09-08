@@ -1,10 +1,22 @@
-import {View, Text, StyleSheet, Image, Pressable, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  FlatList,
+  RefreshControl,
+  Touchable,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import NewFeedPage from './NewsFeeds/NewFeedPage';
 import {useDispatch, useSelector} from 'react-redux';
-import {newsFeedList} from '../../../actions/newsfeedAction';
+import {likeAndDislike, newsFeedList} from '../../../actions/newsfeedAction';
 import LoadingAnimation from '../../../component/Loader';
 import moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
+import {formatDateTime} from '../../../utils/constant';
 const calender = require('../../../assets/images/dashboardIcon/newsfeed11.png');
 const Eyes = require('../../../assets/images/icon/eyes.png');
 const Like1 = require('../../../assets/images/icon/like1.png');
@@ -14,25 +26,86 @@ const Comment = require('../../../assets/images/icon/comment.png');
 const Pin = require('../../../../assets/images/icon/pin.png');
 export default function Newsfeed() {
   const dispatch = useDispatch();
-  const {newsFeedData, loading} = useSelector(state => state.newsFeed);
+
+  const navigation = useNavigation();
+
+  const [refreshing, setRefreshing] = React.useState(false);
+  const [newsFeedDataList, setNewsFeedDataList] = React.useState([]);
+  const {newsFeedData, loading, like} = useSelector(state => state.newsFeed);
+  const [newsFeedTheId, setNewsFeedTheId] = React.useState(null);
+
   const getNewsFeedData = () => {
     dispatch(newsFeedList());
   };
   useEffect(() => {
     getNewsFeedData();
   }, []);
-  console.log('newsFeed all list', newsFeedData);
-  const formatDateTime = dateString => {
-    const date = moment(dateString);
 
-    if (date.isSame(moment(), 'day')) {
-      // If it's today → show only time
-      return date.format('hh:mm A');
-    } else {
-      // If it's not today → show date + time
-      return date.format('DD-MM-YYYY hh:mm A');
+  // useEffect(() => {
+  //   if (newsFeedData?.feeds.length > 0) {
+  //     setNewsFeedDataList(newsFeedData?.feeds);
+  //   }
+  // }, [newsFeedData]);
+
+  const likeDislike = newsFeedId => {
+    setNewsFeedTheId(newsFeedId);
+    // console.log('newsFeedId', newsFeedId);
+    dispatch(likeAndDislike(newsFeedId));
+  };
+
+  const handleLike = () => {
+    console.log('handleLike', like, newsFeedTheId, newsFeedDataList);
+    if (like != null && newsFeedTheId != null) {
+      const updatedData = newsFeedDataList.map(item => {
+        if (item.id === newsFeedTheId) {
+          const newIsLiked = item.is_liked === 1 ? 0 : 1; // toggle like
+          return {
+            ...item,
+            is_liked: newIsLiked,
+            total_likes:
+              newIsLiked === 1
+                ? item.total_likes + 1
+                : Math.max(item.total_likes - 1, 0), // prevent negative
+          };
+        }
+        return item;
+      });
+
+      console.log('Updated afterLike ', updatedData);
+      setNewsFeedDataList(updatedData); // update state so UI rerenders
     }
   };
+
+  useEffect(() => {
+    // handleLike();
+  }, [like]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    getNewsFeedData();
+    // setTimeout(() => {
+    //   setRefreshing(false);
+    // }, 2000);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      setRefreshing(false);
+    }
+  }, [loading]);
+  console.log('newsFeed all list', newsFeedData);
+  console.log('like', like);
+  // const formatDateTime = dateString => {
+  //   const date = moment(dateString);
+
+  //   if (date.isSame(moment(), 'day')) {
+  //     // If it's today → show only time
+  //     return date.format('hh:mm A');
+  //   } else {
+  //     // If it's not today → show date + time
+  //     return date.format('DD-MM-YYYY hh:mm A');
+  //   }
+  // };
   const Card = ({item}) => {
     return (
       <>
@@ -68,7 +141,7 @@ export default function Newsfeed() {
             <View style={styles.box1}>
               <View style={styles.left}>
                 <View style={styles.iconBox}>
-                  <Image source={Like1} style={{width: 16, height: 16}} />
+                  <Image source={Like} style={{width: 16, height: 16}} />
                   <Text style={styles.value}>{item?.total_likes}</Text>
                 </View>
                 <View style={styles.iconBox}>
@@ -76,24 +149,34 @@ export default function Newsfeed() {
                   <Text style={styles.value}>{item?.total_comments}</Text>
                 </View>
               </View>
-              <View style={styles.right}>
+              {/* <View style={styles.right}>
                 <Text style={styles.value}>
                   <Image source={Eyes} style={{width: 16, height: 9}} />
                   0/0
                 </Text>
-              </View>
+              </View> */}
             </View>
             <View style={styles.thinLine}></View>
             <View style={styles.box1}>
               <View style={styles.left}>
-                <View style={styles.iconBox}>
-                  <Image source={Like} style={{width: 16, height: 16}} />
+                <TouchableOpacity
+                  style={styles.iconBox}
+                  onPress={() => likeDislike(item.id)}>
+                  <Image
+                    source={item?.is_liked == '1' ? Like1 : Like}
+                    style={{width: 16, height: 16}}
+                  />
                   <Text style={styles.value}>Likes</Text>
-                </View>
-                <View style={styles.iconBox}>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('NewsfeedPage', {newsData: item});
+                  }}
+                  style={styles.iconBox}>
                   <Image source={Comment} style={{width: 20, height: 16}} />
                   <Text style={styles.value}>Comments</Text>
-                </View>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -122,6 +205,9 @@ export default function Newsfeed() {
         </View>
       ) : (
         <FlatList
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
           data={newsFeedData?.feeds}
           renderItem={({item}) => <Card item={item} />}
           keyExtractor={i => i.id}

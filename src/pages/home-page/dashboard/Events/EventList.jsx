@@ -40,6 +40,14 @@ const EventsList = ({route}) => {
   const [myshedule, setMyShedule] = useState(true);
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const [filterToggle, setFilterToggle] = useState({
+    dayNotes: false,
+    scheduledShifts: false,
+    availableShifts: false,
+    unassignedShifts: false,
+    timeOff: false,
+    noShows: false,
+  });
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const {events, loading, totalHours} = useSelector(state => state.events);
@@ -111,6 +119,10 @@ const EventsList = ({route}) => {
       setModalVisible(false);
     }
   }, [route]);
+
+  const handleToggleSwitch = name => {
+    setFilterToggle(prevState => ({...prevState, [name]: !prevState[name]}));
+  };
   return (
     <View style={styles.container}>
       <Pressable
@@ -364,10 +376,12 @@ const EventsList = ({route}) => {
               <Text style={styles.value}>Day Notes</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#ffffff' : '#f4f3f4'}
+                thumbColor={filterToggle?.dayNotes ? '#ffffff' : '#f4f3f4'}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => {
+                  handleToggleSwitch('dayNotes');
+                }}
+                value={filterToggle?.dayNotes}
               />
             </View>
             <View style={styles.line}></View>
@@ -379,50 +393,66 @@ const EventsList = ({route}) => {
               <Text style={styles.value}>Scheduled shifts</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#ffffff' : '#f4f3f4'}
+                thumbColor={
+                  filterToggle?.scheduledShifts ? '#ffffff' : '#f4f3f4'
+                }
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => {
+                  handleToggleSwitch('scheduledShifts');
+                }}
+                value={filterToggle?.scheduledShifts}
               />
             </View>
             <View style={styles.box}>
               <Text style={styles.value}>Available Shifts</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#ffffff' : '#f4f3f4'}
+                thumbColor={
+                  filterToggle?.availableShifts ? '#ffffff' : '#f4f3f4'
+                }
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => {
+                  handleToggleSwitch('availableShifts');
+                }}
+                value={filterToggle?.availableShifts}
               />
             </View>
             <View style={styles.box}>
               <Text style={styles.value}>Unassigned shifts</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#ffffff' : '#f4f3f4'}
+                thumbColor={
+                  filterToggle?.unassignedShifts ? '#ffffff' : '#f4f3f4'
+                }
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => {
+                  handleToggleSwitch('unassignedShifts');
+                }}
+                value={filterToggle?.unassignedShifts}
               />
             </View>
             <View style={styles.box}>
               <Text style={styles.value}>Time off</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#ffffff' : '#f4f3f4'}
+                thumbColor={filterToggle?.timeOff ? '#ffffff' : '#f4f3f4'}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => {
+                  handleToggleSwitch('timeOff');
+                }}
+                value={filterToggle?.timeOff}
               />
             </View>
             <View style={styles.box}>
               <Text style={styles.value}>No Shows</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
-                thumbColor={isEnabled ? '#ffffff' : '#f4f3f4'}
+                thumbColor={filterToggle?.noShows ? '#ffffff' : '#f4f3f4'}
                 ios_backgroundColor="#3e3e3e"
-                onValueChange={toggleSwitch}
-                value={isEnabled}
+                onValueChange={() => {
+                  handleToggleSwitch('noShows');
+                }}
+                value={filterToggle?.noShows}
               />
             </View>
             <View style={styles.btnContainer}>

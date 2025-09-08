@@ -4,6 +4,7 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Newsfeed from '../Newsfeed';
 import NewFeedPage from './NewFeedPage';
+import AddNewsFeed from './AddNewsFeed';
 const Stack = createStackNavigator();
 export default function Index() {
   return (
@@ -31,7 +32,7 @@ export default function Index() {
           ),
           headerRight: () => (
             <TouchableOpacity
-              onPress={() => navigation.navigate('NewsfeedPage')}>
+              onPress={() => navigation.navigate('AddNewsFeed')}>
               <Image
                 source={require('../../../../assets/images/icon/add.png')}
                 style={{width: 18, height: 18, marginRight: 12}}
@@ -50,6 +51,28 @@ export default function Index() {
                 Pages
               </Text>
             </TouchableOpacity>
+          ),
+        })}
+      />
+
+      <Stack.Screen
+        name="AddNewsFeed"
+        component={AddNewsFeed}
+        options={({navigation}) => ({
+          headerShown: true,
+          headerTintColor: 'white',
+          headerTitle: 'Newsfeed',
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontSize: 12,
+          },
+          headerBackground: () => (
+            <LinearGradient
+              colors={['#0085FE', '#01417B']}
+              start={{x: 1, y: 0}}
+              end={{x: 0, y: 1}}
+              style={{flex: 1}}
+            />
           ),
         })}
       />
