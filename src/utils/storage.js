@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const storeToken = async (token) => {
+export const storeToken = async token => {
+  console.log('Storing token', token);
   try {
     await AsyncStorage.setItem('authToken', token);
   } catch (error) {
@@ -11,7 +12,7 @@ export const storeToken = async (token) => {
 export const getToken = async () => {
   try {
     const token = await AsyncStorage.getItem('authToken');
-    return token;  // Return the token
+    return token; // Return the token
   } catch (error) {
     console.error('Error fetching token', error);
     return null;

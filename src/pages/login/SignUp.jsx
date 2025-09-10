@@ -59,12 +59,13 @@ export default function SignUp() {
       const dataOBject = {
         id: userInfo?.data?.user?.id,
         name: userInfo?.data?.user?.name,
-        email: userInfo?.data?.user?.email,
+        email: ' ' + userInfo?.data?.user?.email,
         picture: userInfo?.data?.user?.photo,
       };
       const token = userInfo?.data?.idToken;
-
-      dispatch(socialLogin(token, dataOBject));
+      if (dataOBject.email != null) {
+        dispatch(socialLogin(token, dataOBject));
+      }
     } catch (error) {
       console.error(error);
     }

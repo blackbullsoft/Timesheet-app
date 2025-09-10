@@ -54,6 +54,31 @@ const AddNewsFeed = () => {
       }
     });
   };
+
+  const AddPost = () => {
+    const formdata = new FormData();
+    formdata.append(
+      'content',
+      'Just a simple text post without any media files!',
+    );
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        Authorization:
+          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2NywidXNlcm5hbWUiOiJDaGFybHRvbiBTY2ljbHVuYSIsInJvbGUiOiIxIiwiZW1haWwiOiJjaGFybHRvbkBlcHNtYWx0YS5jb20iLCJzdGF0dXMiOiIxIiwiaWF0IjoxNzU3NDg3NTU0LCJleHAiOjE3NTc1NzM5NTR9.eW4P7cPE2S6hJzAAAzJTy9fN6AfmA4JJLf6gm7lgLEQ',
+        // ⚠️ Don't set Content-Type, fetch will do it automatically for FormData
+      },
+      body: JSON.stringify({
+        content: 'Just a simple text post without any media files!',
+      }),
+    };
+
+    fetch('http://174.138.57.202:8000/newsfeed/post', requestOptions)
+      .then(response => response.json())
+      .then(result => console.log(result))
+      .catch(error => console.error(error));
+  };
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -121,7 +146,8 @@ const AddNewsFeed = () => {
           />
           <TouchableOpacity
             onPress={() => {
-              openGallery();
+              // openGallery();
+              AddPost();
             }}
             style={styles.AttachContainer}>
             <Image source={Pin} style={styles.iconStyle} />

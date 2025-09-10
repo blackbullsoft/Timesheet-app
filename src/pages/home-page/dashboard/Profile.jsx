@@ -6,6 +6,8 @@ import {
   Image,
   ImageBackground,
   TextInput,
+  Modal,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -29,6 +31,7 @@ export default function Profile({route}) {
   const [phoneNumber, setPhoneNumber] = useState(data?.mobile?.slice(3) || '');
   const [formattedPhone, setFormattedPhone] = useState('');
   const [countryCode, setCountryCode] = useState('IN'); // Default
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     if (route.params?.isEdit !== undefined) {
@@ -49,12 +52,19 @@ export default function Profile({route}) {
       ) : (
         <ScrollView style={styles.box}>
           <View>
-            <Image
-              source={{
-                uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-              }}
-              style={styles.imageStyle}
-            />
+            <TouchableOpacity
+              disabled={!isEdit}
+              onPress={() => {
+                setModalVisible(true);
+              }}>
+              <Image
+                source={{
+                  uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                }}
+                style={styles.imageStyle}
+              />
+            </TouchableOpacity>
+
             <Text style={styles.heading}>{data?.username}</Text>
             {!isEdit && (
               <>
@@ -214,6 +224,25 @@ export default function Profile({route}) {
                 <Text style={{color: '#555555'}}>0</Text>
               </View>
             </View>
+
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={modalVisible}
+              onRequestClose={() => {
+                Alert.alert('Modal has been closed.');
+                setModalVisible(!modalVisible);
+              }}>
+              <View>
+                <Text>Select a photo</Text>
+                <TouchableOpacity>
+                  <Text>Take a photo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity>
+                  <Text>Choose from library</Text>
+                </TouchableOpacity>
+              </View>
+            </Modal>
           </View>
         </ScrollView>
       )}
@@ -391,5 +420,25 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: '#ffffff',
     color: '#888888',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
 });

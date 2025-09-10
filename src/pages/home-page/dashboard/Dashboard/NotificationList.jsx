@@ -78,8 +78,13 @@ export default function Home() {
     checkToken();
   }, []);
   useEffect(() => {
-    dispatch(fetchProfile(user?.userId));
-    dispatch(fetchNotifications(user?.userId));
+    if (user?.userId != null && user?.userId != undefined) {
+      dispatch(fetchProfile(user?.userId));
+      dispatch(fetchNotifications(user?.userId));
+    } else {
+      dispatch(fetchProfile(user?.id));
+      dispatch(fetchNotifications(user?.id));
+    }
   }, [user]);
 
   useEffect(() => {
@@ -90,7 +95,7 @@ export default function Home() {
     getToken();
   }, []);
 
-  console.log('notifications', notifications);
+  console.log('notifications', data);
   return (
     <SafeAreaView style={{height: '100%'}}>
       {loading ? (

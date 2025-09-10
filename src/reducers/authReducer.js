@@ -37,7 +37,7 @@ const authReducer = (state = initialState, action) => {
     case 'USER_SOCIAL_LOGIN_REQUEST':
       return {...state, loading: true}; // when request starts
     case 'USER_SOCIAL_LOGIN_REQUEST_SUCCESS':
-      return {...state, social: action.payload, loading: false}; // success
+      return {...state, user: action.payload, loading: false}; // success
     case 'USER_SOCIAL_LOGIN_REQUEST_FAILURE':
       return {...state, error: action.payload, loading: false}; // failure
 

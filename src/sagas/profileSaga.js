@@ -6,9 +6,9 @@ import {getToken, removeToken, storeToken} from '../utils/storage';
 function* fetchProfileSaga(action) {
   try {
     const token = yield call(getToken);
-
+    console.log('Token in fetch profile saga', token);
     if (!token) {
-      throw new Error('No authentication token found');
+      throw new Error('No authentication token found fetch profile');
     }
 
     const config = {

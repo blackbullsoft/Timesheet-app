@@ -117,15 +117,53 @@ export default function Newsfeed() {
           }}>
           <View style={styles.box}>
             <View style={styles.left}>
-              <Image
+              {item?.profilePicture?.content ? (
+                <Image
+                  // source={{
+                  //   uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                  // }}
+                  // source={{
+                  //   uri: item?.profilePictureUrl,
+                  // }}
+                  source={{
+                    uri: `data:image/jpeg;base64,${item?.profilePicture?.content}`,
+                  }}
+                  style={styles.imageStyle}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.imageStyle,
+                    {
+                      backgroundColor: '#ecebebad',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      borderRadius: 50,
+                      width: 44,
+                      height: 44,
+                    },
+                  ]}>
+                  {/* <Text>{item.commented_by?.split(' ')}</Text> */}
+                  <Text>
+                    {item.username
+                      .split(' ')
+                      .map(word => word.charAt(0).toUpperCase())
+                      .join('')}
+                  </Text>
+                </View>
+              )}
+              {/* <Image
                 // source={{
                 //   uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
                 // }}
+                // source={{
+                //   uri: item?.profilePictureUrl,
+                // }}
                 source={{
-                  uri: item?.profilePictureUrl,
+                  uri: `data:image/jpeg;base64,${item?.profilePicture?.content}`,
                 }}
                 style={styles.imageStyle}
-              />
+              /> */}
               <View>
                 <Text style={styles.lable}>{item?.username}</Text>
               </View>

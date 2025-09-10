@@ -63,7 +63,7 @@ function* loginUserSaga(action) {
 }
 
 function* socialLogin(action) {
-  console.log('Social ogin', action);
+  // console.log('Social ogin', action);
   try {
     const dataPayload = {
       googleToken: action.payload.googleToken,
@@ -73,20 +73,23 @@ function* socialLogin(action) {
     const response = yield call(
       axios.post,
       `${API_BASE_URL}/user/auth/google/mobile`,
-      {
-        dataPayload,
-      },
+
+      dataPayload,
     );
 
     console.log('Social login', response);
 
-    // const token = response.data.token;
-    // const data = jwtDecode(token);
+    const token = response.data.token;
+    console.log('Token 123', token);
+    const data = jwtDecode(token);
 
-    // yield call(storeToken, token);
+    yield call(storeToken, token);
+    console.log('Decoded data', data);
     yield put({type: 'USER_SOCIAL_LOGIN_REQUEST_SUCCESS', payload: data});
 
     const userAgent = yield call(DeviceInfo.getUserAgent);
+
+    console.log('User agent', userAgent);
     const deviceType =
       Platform.OS === 'android' ? 1 : Platform.OS === 'ios' ? 2 : 3;
 
@@ -94,6 +97,7 @@ function* socialLogin(action) {
       axios.get,
       `${API_BASE_URL}/user/fcm?userId=${data?.userId}`,
     );
+
     const existingFcmTokens = fcmResponse.data || [];
 
     const isFcmTokenExists = existingFcmTokens.some(
