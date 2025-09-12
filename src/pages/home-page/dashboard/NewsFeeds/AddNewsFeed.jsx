@@ -36,6 +36,7 @@ const AddNewsFeed = () => {
   ];
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+  const [selectedImage, setSelectedImage] = useState();
 
   const openGallery = () => {
     const options = {

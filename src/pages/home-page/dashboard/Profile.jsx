@@ -8,6 +8,7 @@ import {
   TextInput,
   Modal,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -15,6 +16,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {fetchProfile} from '../../../actions/profileAction';
 import LoadingAnimation from '../../../component/Loader';
 import PhoneInput from 'react-native-phone-number-input';
+import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+
 const Background = require('../../../assets/images/login/Bg1.png');
 const Admin = require('../../../assets/images/icon/admin.png');
 const Web = require('../../../assets/images/icon/web.png');
@@ -32,6 +35,7 @@ export default function Profile({route}) {
   const [formattedPhone, setFormattedPhone] = useState('');
   const [countryCode, setCountryCode] = useState('IN'); // Default
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState();
 
   useEffect(() => {
     if (route.params?.isEdit !== undefined) {
@@ -43,6 +47,47 @@ export default function Profile({route}) {
   // useEffect(()=>{
   //   dispatch(fetchProfile())
   // },[])
+
+  const openGallery = () => {
+    const options = {
+      mediaType: 'photo', // or 'video', or 'mixed'
+      quality: 1,
+    };
+
+    launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const source = {uri: response.assets[0].uri};
+        setSelectedImage(source);
+        setModalVisible(false);
+      }
+    });
+  };
+
+  const OpenCamera = () => {
+    const options = {
+      mediaType: 'photo', // or 'video', or 'mixed'
+      quality: 1,
+    };
+
+    launchCamera(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        console.log('Response', response);
+        const source = {uri: response.assets[0].uri};
+        setSelectedImage(source);
+        setModalVisible(false);
+      }
+    });
+  };
+
+  console.log('Selected', selectedImage);
   return (
     <View style={styles.container}>
       {loading ? (
@@ -59,7 +104,10 @@ export default function Profile({route}) {
               }}>
               <Image
                 source={{
-                  uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                  uri:
+                    selectedImage != null
+                      ? selectedImage?.uri
+                      : 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
                 }}
                 style={styles.imageStyle}
               />
@@ -226,22 +274,32 @@ export default function Profile({route}) {
             </View>
 
             <Modal
-              animationType="slide"
+              animationType="fade"
               transparent={true}
               visible={modalVisible}
               onRequestClose={() => {
-                Alert.alert('Modal has been closed.');
+                // Alert.alert('Modal has been closed.');
                 setModalVisible(!modalVisible);
               }}>
-              <View>
-                <Text>Select a photo</Text>
-                <TouchableOpacity>
-                  <Text>Take a photo</Text>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                  <Text>Choose from library</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+                <View style={styles.centeredView}>
+                  <View style={styles.modalView}>
+                    {/* <Text style={[styles.modalText]}>Select photo from</Text> */}
+                    <TouchableOpacity
+                      onPress={() => {
+                        OpenCamera();
+                      }}>
+                      <Text style={styles.modalText}>Take a photo</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        openGallery();
+                      }}>
+                      <Text style={styles.modalText}>Choose from library</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableWithoutFeedback>
             </Modal>
           </View>
         </ScrollView>
@@ -425,13 +483,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
+    borderRadius: 5,
+    // padding: 35,
+    // alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -440,5 +499,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 5,
+    width: '70%',
+  },
+  modalText: {
+    fontSize: 17,
+    borderBottomWidth: 2,
+    paddingVertical: 10,
+    textAlign: 'center',
   },
 });
