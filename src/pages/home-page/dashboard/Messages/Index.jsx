@@ -89,11 +89,11 @@ export default function Index() {
             fontSize: 12,
           },
           headerStyle: {height: 100},
-          headerRight: () => (
-            <TouchableOpacity>
-              <Text style={{color: 'white', marginRight: 12}}>Save</Text>
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity>
+          //     <Text style={{color: 'white', marginRight: 12}}>Save</Text>
+          //   </TouchableOpacity>
+          // ),
           headerBackground: () => (
             <LinearGradient
               colors={['#0085FE', '#01417B']}

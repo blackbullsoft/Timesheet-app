@@ -15,4 +15,9 @@ export const sendMessage = messagBody => ({
   //   payload: {email, password, fcmToken},
 });
 
+export const createConversations = data => ({
+  type: 'CREATE_CONVERSATIONS_REQUEST',
+  payload: {data},
+});
+
 export const clearSentMessage = () => ({type: 'CLEAR_SENT_MESSAGE'});

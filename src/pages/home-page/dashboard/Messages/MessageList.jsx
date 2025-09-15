@@ -12,7 +12,7 @@ import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import NoMessage from './NoMessage';
 import LoadingAnimation from '../../../../component/Loader';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {chatList} from '../../../../actions/chatAction';
 const SearchIcon = require('../../../../assets/images/icon/search.png');
 
@@ -98,11 +98,16 @@ export default function MessageList() {
     console.log('filterData', filterData);
   };
   // const { coworkers,loading } = useSelector((state) => state.coworkers);
-  useEffect(() => {
-    getChatList();
+  // useEffect(() => {
+  //   getChatList();
 
-    // dispatch(fetchCoworkersList())
-  }, []);
+  //   // dispatch(fetchCoworkersList())
+  // }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(chatList());
+    }, [dispatch]),
+  );
 
   useEffect(() => {
     if (chats) {

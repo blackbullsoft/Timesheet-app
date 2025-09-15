@@ -31,6 +31,18 @@ const chatReducer = (state = initialState, action) => {
     case 'SEND_MESSAGE_FAILED':
       return {...state, error: action.payload, loading: false}; // failure
 
+    // Create Conversation
+    case 'CREATE_CONVERSATIONS_REQUEST':
+      return {...state, loading: true}; // when request starts
+    case 'CREATE_CONVERSATIONS_SUCCESS':
+      return {...state, sentMessage: action.payload, loading: false}; // success
+    case 'CREATE_CONVERSATIONS_FAILED':
+      return {
+        ...state,
+        error: action.payload,
+        sentMessage: action.payload,
+        loading: false,
+      }; // failure
     case 'CLEAR_SENT_MESSAGE':
       return {...state, sentMessage: null};
     default:
