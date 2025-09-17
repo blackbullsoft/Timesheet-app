@@ -43,7 +43,7 @@ export default function Profile({route}) {
     }
   }, [route.params?.isEdit]);
 
-  console.log('datadata', data);
+  console.log('datadata Profile', data);
   // useEffect(()=>{
   //   dispatch(fetchProfile())
   // },[])
