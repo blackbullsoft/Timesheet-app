@@ -6,37 +6,49 @@ import {
   TextInput,
   ScrollView,
   FlatList,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchCoworkersList} from '../../../../actions/coworkerAction';
 import LoadingAnimation from '../../../../component/Loader';
+import {useNavigation} from '@react-navigation/native';
 const SearchIcon = require('../../../../assets/images/icon/search.png');
 const Coworker = require('../../../../assets/images/more/coworker.png');
 const Right = require('../../../../assets/images/icon/right.png');
 
-const Card = item => {
-  return (
-    <View style={styles.card}>
-      <View style={styles.left}>
-        <Image
-          source={{
-            uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-          }}
-          style={{width: 44, height: 44, borderRadius: 50}}
-        />
-        <Text>{item?.item?.username}</Text>
-      </View>
-      <Image source={Right} style={{width: 10, height: 15}} />
-    </View>
-  );
-};
 export default function Coworkers() {
   const dispatch = useDispatch();
   const {coworkers, loading} = useSelector(state => state.coworkers);
   useEffect(() => {
     dispatch(fetchCoworkersList());
   }, []);
+  const navigation = useNavigation();
+
+  const Card = item => {
+    return (
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => {
+          navigation.navigate('UserProfile', {
+            employeeId: item.item.id,
+            data: item.item,
+          });
+          console.log('item', item.item);
+        }}>
+        <View style={styles.left}>
+          <Image
+            source={{
+              uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+            }}
+            style={{width: 44, height: 44, borderRadius: 50}}
+          />
+          <Text>{item?.item?.username}</Text>
+        </View>
+        <Image source={Right} style={{width: 10, height: 15}} />
+      </TouchableOpacity>
+    );
+  };
   return (
     <View>
       <View style={styles.overlapBox}>
