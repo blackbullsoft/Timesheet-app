@@ -14,11 +14,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "201479043285-0d4iovqdmi0bjj5f9sppanutlab87828.apps.googleusercontent.com",
+          "client_id": "201479043285-1oa15chloooujnusb815g0pano8dqmjk.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.timesheet",
-            "certificate_hash": "4d06d8a58e51078ffab8f69d28a9d3a2192abb7a"
+            "certificate_hash": "0ad80f4809965f7b5540652b9cbc88b90d6d9f9c"
           }
         },
         {
@@ -35,7 +35,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "201479043285-agu37ueut0csu6nc35ude3uom7u9hb6g.apps.googleusercontent.com",
+              "client_id": "201479043285-14kki8hc2j056lftdorvi6v3fm33b090.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

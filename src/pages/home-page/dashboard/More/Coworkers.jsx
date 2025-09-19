@@ -8,7 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {fetchCoworkersList} from '../../../../actions/coworkerAction';
 import LoadingAnimation from '../../../../component/Loader';
@@ -20,11 +20,26 @@ const Right = require('../../../../assets/images/icon/right.png');
 export default function Coworkers() {
   const dispatch = useDispatch();
   const {coworkers, loading} = useSelector(state => state.coworkers);
+  const [cowokerList, setCowokerList] = useState([]);
+
   useEffect(() => {
     dispatch(fetchCoworkersList());
   }, []);
   const navigation = useNavigation();
 
+  console.log('coworkers', coworkers);
+
+  const searchUser = text => {
+    const filterData = coworkers.filter(item =>
+      item?.username.toLowerCase().includes(text.toLowerCase()),
+    );
+    setCowokerList(filterData);
+    console.log('filterData', filterData);
+  };
+
+  useEffect(() => {
+    setCowokerList(coworkers);
+  }, [coworkers]);
   const Card = item => {
     return (
       <TouchableOpacity
@@ -37,12 +52,24 @@ export default function Coworkers() {
           console.log('item', item.item);
         }}>
         <View style={styles.left}>
-          <Image
-            source={{
-              uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-            }}
-            style={{width: 44, height: 44, borderRadius: 50}}
-          />
+          {item.item.profile_picture_url == null ? (
+            <View style={styles.NameContainer}>
+              <Text>
+                {item.item.username
+                  .split(' ')
+                  .map(word => word.charAt(0).toUpperCase())
+                  .join('')}
+              </Text>
+            </View>
+          ) : (
+            <Image
+              source={{
+                uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+              }}
+              style={{width: 44, height: 44, borderRadius: 50}}
+            />
+          )}
+
           <Text>{item?.item?.username}</Text>
         </View>
         <Image source={Right} style={{width: 10, height: 15}} />
@@ -57,6 +84,7 @@ export default function Coworkers() {
           placeholder="Find your coworker.."
           style={styles.inputStyle}
           placeholderTextColor="#555555"
+          onChangeText={text => searchUser(text)}
         />
       </View>
       {loading ? (
@@ -72,7 +100,7 @@ export default function Coworkers() {
           <View style={styles.line}></View>
 
           <FlatList
-            data={coworkers}
+            data={cowokerList}
             renderItem={({item}) => <Card item={item} />}
             keyExtractor={item => item.id.toString()}
           />
@@ -167,5 +195,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 700,
     color: '#555555',
+  },
+  NameContainer: {
+    backgroundColor: '#ecebebff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    width: 44,
+    height: 44,
   },
 });

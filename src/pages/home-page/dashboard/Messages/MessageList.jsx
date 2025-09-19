@@ -6,6 +6,7 @@ import {
   ScrollView,
   FlatList,
   Pressable,
+  RefreshControl,
 } from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
 import React, {useEffect, useState} from 'react';
@@ -79,6 +80,8 @@ const Card = item => {
 export default function MessageList() {
   const dispatch = useDispatch();
   const [chatData, setChatData] = useState([]);
+  const [refreshing, setRefreshing] = React.useState(false);
+
   // const {chat} = useSelector(state => state.chat);
   const {chatList: chats, loading, error} = useSelector(state => state.chat);
 
@@ -114,6 +117,20 @@ export default function MessageList() {
       setChatData(chats);
     }
   }, [chats]);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(chatList());
+
+    // setTimeout(() => {
+    //   setRefreshing(false);
+    // }, 2000);
+  }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      setRefreshing(false);
+    }
+  }, [loading]);
   console.log('chatData', chatData);
   return (
     <View>
@@ -137,6 +154,12 @@ export default function MessageList() {
           ) : (
             <View style={{marginTop: 22}}>
               <FlatList
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }
                 data={chatData}
                 renderItem={({item}) => <Card item={item} />}
                 keyExtractor={item => item.conversation_id.toString()}

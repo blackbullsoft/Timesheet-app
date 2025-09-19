@@ -48,17 +48,22 @@ export default function Index() {
               style={{flex: 1}}
             />
           ),
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() =>
-                navigation.setParams({isEdit: !route.params?.isEdit})
-              }>
-              <Image
-                source={require('../../../assets/images/dashboardIcon/edit.png')}
-                style={{width: 60, height: 30, marginRight: 12}}
-              />
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity
+          //     onPress={() =>
+          //       navigation.setParams({isEdit: !route.params?.isEdit})
+          //     }
+          //     style={{marginRight: 12}}>
+          //     {route.params?.isEdit ? (
+          //       <Text style={{color: 'white', fontSize: 16}}>Save</Text>
+          //     ) : (
+          //       <Image
+          //         source={require('../../../assets/images/dashboardIcon/edit.png')}
+          //         style={{width: 60, height: 30, marginRight: 12}}
+          //       />
+          //     )}
+          //   </TouchableOpacity>
+          // ),
         })}
       />
       <Stack.Screen

@@ -40,13 +40,15 @@ export default function AnnouncementList() {
     return (
       <Pressable
         style={styles.card}
-        onPress={() =>
-          navigation.navigate('Announcement', {
-            title: item?.item?.events,
-            des: item?.item?.description,
-            id: item?.item?.id,
-          })
-        }>
+        // onPress={() =>
+        //   navigation.navigate('Announcement', {
+        //     title: item?.item?.events,
+        //     des: item?.item?.description,
+        //     id: item?.item?.id,
+        //   })
+
+        // }
+      >
         <View
           style={{
             flexDirection: 'row',

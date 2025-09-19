@@ -54,6 +54,7 @@ export default function SignUp() {
   const handelSocialLogin = async () => {
     try {
       await GoogleSignin.hasPlayServices();
+      await GoogleSignin.signOut();
       const userInfo = await GoogleSignin.signIn();
       console.log('User Info:', userInfo?.data?.user);
       const dataOBject = {
@@ -70,7 +71,6 @@ export default function SignUp() {
       console.error(error);
     }
   };
-
   const handleSignUp = async () => {
     if (signupLoading) return;
     if (
@@ -138,10 +138,18 @@ export default function SignUp() {
     }
   }, [signup]);
 
+  // useEffect(() => {
+  //   GoogleSignin.configure({
+  //     webClientId:
+  //       '201479043285-14kki8hc2j056lftdorvi6v3fm33b090.apps.googleusercontent.com', // From Google Cloud Console
+  //     offlineAccess: true,
+  //   });
+  // }, []);
+
   useEffect(() => {
     GoogleSignin.configure({
       webClientId:
-        '201479043285-14kki8hc2j056lftdorvi6v3fm33b090.apps.googleusercontent.com', // From Google Cloud Console
+        '201479043285-agu37ueut0csu6nc35ude3uom7u9hb6g.apps.googleusercontent.com', // ✅ use the Web Client ID from google-services.json
       offlineAccess: true,
     });
   }, []);

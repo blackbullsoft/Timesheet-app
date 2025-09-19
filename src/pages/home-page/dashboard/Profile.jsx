@@ -9,14 +9,16 @@ import {
   Modal,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {fetchProfile} from '../../../actions/profileAction';
+import {EditProfileSaga, fetchProfile} from '../../../actions/profileAction';
 import LoadingAnimation from '../../../component/Loader';
 import PhoneInput from 'react-native-phone-number-input';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
+import ModModalComponental from '../../../component/ModalComponent';
 
 const Background = require('../../../assets/images/login/Bg1.png');
 const Admin = require('../../../assets/images/icon/admin.png');
@@ -29,13 +31,18 @@ export default function Profile({route}) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [isEdit, setIsEdit] = useState(route.params?.isEdit || false);
-  const {data, loading} = useSelector(state => state.profile);
+  const {data} = useSelector(state => state.profile);
+  const {loading, editProfile} = useSelector(state => state.userProfile);
+  const {user} = useSelector(state => state.auth);
+
   const phoneInputRef = useRef(null);
   const [phoneNumber, setPhoneNumber] = useState(data?.mobile?.slice(3) || '');
   const [formattedPhone, setFormattedPhone] = useState('');
   const [countryCode, setCountryCode] = useState('IN'); // Default
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState();
+  const [userEditData, setUserEditData] = useState(data);
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     if (route.params?.isEdit !== undefined) {
@@ -43,10 +50,16 @@ export default function Profile({route}) {
     }
   }, [route.params?.isEdit]);
 
-  console.log('datadata Profile', data);
-  // useEffect(()=>{
-  //   dispatch(fetchProfile())
-  // },[])
+  const handleValue = (key, value) => {
+    setUserEditData(prev => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+  console.log('datadata Profile', countryCode, userEditData);
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, []);
 
   const openGallery = () => {
     const options = {
@@ -60,8 +73,9 @@ export default function Profile({route}) {
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
       } else {
+        console.log('Image', response);
         const source = {uri: response.assets[0].uri};
-        setSelectedImage(source);
+        setSelectedImage(response.assets[0]);
         setModalVisible(false);
       }
     });
@@ -81,13 +95,66 @@ export default function Profile({route}) {
       } else {
         console.log('Response', response);
         const source = {uri: response.assets[0].uri};
-        setSelectedImage(source);
+        setSelectedImage(response.assets[0]);
         setModalVisible(false);
       }
     });
   };
 
-  console.log('Selected', selectedImage);
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => {
+            if (isEdit) {
+              Alert.alert('Do you want to update', '', [
+                {
+                  text: 'Cancel',
+                  onPress: () => console.log('Cancel Pressed'),
+                  style: 'cancel',
+                },
+                {
+                  text: 'OK',
+                  onPress: () =>
+                    dispatch(EditProfileSaga(userEditData, selectedImage)),
+                },
+              ]);
+              // Save mode
+              setIsEdit(false);
+              console.log('The if');
+            } else {
+              // Edit mode
+              console.log('ELse');
+              setIsEdit(true);
+            }
+          }}
+          style={{marginRight: 12}}>
+          {isEdit ? (
+            <Text style={{color: 'white', fontSize: 16}}>Save</Text>
+          ) : (
+            <Image
+              source={require('../../../assets/images/dashboardIcon/edit.png')}
+              style={{width: 60, height: 30, marginRight: 12}}
+            />
+          )}
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, isEdit, userEditData, selectedImage]);
+
+  useEffect(() => {
+    if (editProfile.status == 200) {
+      // dispatch(fetchProfile(editProfile?.data.user.id));
+      if (user?.userId != null && user?.userId != undefined) {
+        dispatch(fetchProfile(user?.userId));
+        // dispatch(fetchNotifications(user?.userId));
+      } else {
+        dispatch(fetchProfile(user?.id));
+        // dispatch(fetchNotifications(user?.id));
+      }
+    }
+  }, [editProfile]);
+  console.log('Selected', selectedImage, editProfile, data, phoneNumber);
   return (
     <View style={styles.container}>
       {loading ? (
@@ -106,8 +173,8 @@ export default function Profile({route}) {
                 source={{
                   uri:
                     selectedImage != null
-                      ? selectedImage?.uri
-                      : 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+                      ? selectedImage.uri
+                      : data?.profile_picture_url,
                 }}
                 style={styles.imageStyle}
               />
@@ -131,34 +198,39 @@ export default function Profile({route}) {
                     <Text style={styles.lable}>Your Full name</Text>
                     <TextInput
                       style={styles.inputFeild}
-                      value={data?.username}
+                      value={userEditData?.username}
+                      onChangeText={text => handleValue('username', text)}
                     />
                   </View>
 
                   <View style={styles.inputBox1}>
                     <Text style={styles.lable}>Email</Text>
-                    <TextInput style={styles.inputFeild} value={data?.email} />
+                    <TextInput
+                      style={styles.inputFeild}
+                      value={userEditData?.email}
+                      onChangeText={text => handleValue('email', text)}
+                    />
                   </View>
 
-                  <View style={styles.inputBox1}>
+                  {/* <View style={styles.inputBox1}>
                     <Text style={styles.lable}>Date of Birth</Text>
                     <TextInput style={styles.inputFeild} />
-                  </View>
+                  </View> */}
 
                   <View style={styles.phoneContainer}>
                     <Text style={styles.lable}>Phone Number</Text>
                     <PhoneInput
                       ref={phoneInputRef}
-                      defaultValue={phoneNumber}
+                      defaultValue={userEditData.mobile}
                       defaultCode={countryCode}
-                      //  defaultCode="IN"
+                      // defaultCode="IN"
                       // disableArrowIcon={true}
                       withFlag={true}
                       layout="first"
-                      onChangeText={text => setPhoneNumber(text)}
+                      onChangeText={text => handleValue('mobile', text)}
                       withShadow
                       autoFocus={false}
-                      value={phoneNumber}
+                      value={userEditData.mobile}
                       containerStyle={[
                         styles.phoneInputContainer,
                         {height: 50},
@@ -259,18 +331,22 @@ export default function Profile({route}) {
             )}
 
             <View style={styles.cardBox}>
-              <View style={styles.cardBox1}>
+              <TouchableOpacity
+                style={styles.cardBox1}
+                onPress={() => setShowModal(true)}>
                 <Text style={{fontWeight: 600}}>Location: </Text>
-                <Text style={{color: '#555555'}}>0 </Text>
-              </View>
-              <View style={styles.cardBox1}>
+                <Text style={{color: '#555555'}}>
+                  {data?.locations?.length}{' '}
+                </Text>
+              </TouchableOpacity>
+              {/* <View style={styles.cardBox1}>
                 <Text style={{fontWeight: 600}}>Position: </Text>
                 <Text style={{color: '#555555'}}>0 </Text>
               </View>
               <View style={styles.cardBox1}>
                 <Text style={{fontWeight: 600}}>Group: </Text>
                 <Text style={{color: '#555555'}}>0</Text>
-              </View>
+              </View> */}
             </View>
 
             <Modal
@@ -301,6 +377,14 @@ export default function Profile({route}) {
                 </View>
               </TouchableWithoutFeedback>
             </Modal>
+
+            {showModal && (
+              <ModModalComponental
+                data={data?.locations}
+                showModal={showModal}
+                setShowModal={setShowModal}
+              />
+            )}
           </View>
         </ScrollView>
       )}

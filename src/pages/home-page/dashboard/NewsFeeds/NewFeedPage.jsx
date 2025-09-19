@@ -136,7 +136,7 @@ export default function NewFeedPage({route}) {
     );
   };
 
-  console.log('isKeyboardOpen', commentList);
+  console.log('isKeyboardOpen', newsFeedData);
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -155,8 +155,11 @@ export default function NewFeedPage({route}) {
                 //   uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
                 // }}
 
+                // source={{
+                //   uri: newsFeedData?.profilePictureUrl,
+                // }}
                 source={{
-                  uri: newsFeedData?.profilePictureUrl,
+                  uri: `data:image/jpeg;base64,${newsFeedData?.profilePicture?.content}`,
                 }}
                 style={styles.imageStyle}
               />

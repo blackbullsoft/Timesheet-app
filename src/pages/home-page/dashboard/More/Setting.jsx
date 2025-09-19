@@ -32,7 +32,7 @@ export default function Setting() {
 
   return (
     <ScrollView>
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <Text style={styles.lable}>Messages</Text>
         <View style={styles.box}>
           <Text style={styles.value}>Play Sound effects</Text>
@@ -54,9 +54,9 @@ export default function Setting() {
             value={isEnabledObject.showWhenTyping}
           />
         </View>
-      </View>
+      </View> */}
       <View style={styles.line}></View>
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <Text style={styles.lable}>Shifts</Text>
         <View style={styles.box}>
           <Text style={styles.value}>Play Sound Effects</Text>
@@ -65,7 +65,7 @@ export default function Setting() {
             <Image source={rightGrey} />
           </View>
         </View>
-      </View>
+      </View> */}
       <View style={styles.line}></View>
       <View style={styles.container}>
         <Text style={styles.lable}>Shift alarms</Text>

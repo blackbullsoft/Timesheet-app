@@ -115,9 +115,11 @@ export default function Home() {
                 onPress={() => navigation.navigate('Profile')}>
                 <View>
                   <Image
-                    source={{
-                      uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-                    }}
+                    source={
+                      data?.profile_picture_url
+                        ? {uri: data.profile_picture_url}
+                        : require('../../../../assets/images/login/dummy.webp')
+                    }
                     style={styles.profileStyle}
                   />
                 </View>

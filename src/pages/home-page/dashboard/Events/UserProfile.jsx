@@ -141,14 +141,14 @@ export default function UserProfile({route}) {
                   {employeeData ? employeeData?.locations?.length : '0'}{' '}
                 </Text>
               </TouchableOpacity>
-              <View style={styles.cardBox1}>
+              {/* <View style={styles.cardBox1}>
                 <Text style={{fontWeight: 600}}>Position: </Text>
                 <Text style={{color: '#555555'}}>0 </Text>
               </View>
               <View style={styles.cardBox1}>
                 <Text style={{fontWeight: 600}}>Group: </Text>
                 <Text style={{color: '#555555'}}>0</Text>
-              </View>
+              </View> */}
             </View>
           </View>
 
