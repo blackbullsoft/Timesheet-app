@@ -11,6 +11,7 @@ import notificationSaga from './notificationSaga';
 import shiftSaga from './shiftSaga';
 import chatSaga from './chatSaga';
 import newsFeedSaga from './newsFeedSaga';
+import userSettingSaga from './userSettingSaga';
 
 export default function* rootSaga() {
   yield all([
@@ -26,5 +27,6 @@ export default function* rootSaga() {
     shiftSaga(),
     chatSaga(),
     newsFeedSaga(),
+    userSettingSaga(),
   ]);
 }

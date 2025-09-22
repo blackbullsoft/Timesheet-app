@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Alert,
+  StatusBar,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -154,7 +155,7 @@ export default function Profile({route}) {
       }
     }
   }, [editProfile]);
-  console.log('Selected', selectedImage, editProfile, data, phoneNumber);
+  console.log('Selected', countryCode, userEditData.mobile);
   return (
     <View style={styles.container}>
       {loading ? (

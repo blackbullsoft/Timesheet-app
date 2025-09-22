@@ -15,33 +15,8 @@ import NoMessage from './NoMessage';
 import LoadingAnimation from '../../../../component/Loader';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {chatList} from '../../../../actions/chatAction';
+import {GetName} from '../../../../utils/constant';
 const SearchIcon = require('../../../../assets/images/icon/search.png');
-
-const data = [
-  {
-    name: 'Vinay',
-    img: '',
-    reply: 'You',
-    message: 'do it',
-    id: 1,
-    min: 23,
-    count: 1,
-  },
-  {
-    name: 'Adam',
-    img: '',
-    reply: 'Vinay',
-    message: 'what it is?',
-    id: 2,
-  },
-  {
-    name: 'Vijay',
-    img: '',
-    reply: 'You',
-    message: 'do it',
-    id: 3,
-  },
-];
 
 const Card = item => {
   const navigation = useNavigation();
@@ -53,12 +28,22 @@ const Card = item => {
         // console.log('item', item?.item?.participants[1]?.username)
       }>
       <View style={styles.left}>
-        <Image
-          source={{
-            uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-          }}
-          style={{width: 44, height: 44, borderRadius: 50}}
-        />
+        {item?.item?.participants[1]?.profile_picture_url == null ? (
+          <View style={styles.NameContainer}>
+            <Text>{GetName(item?.item?.conversation_name)}</Text>
+          </View>
+        ) : (
+          <Image
+            // source={{
+            //   uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+            // }}
+            source={{
+              uri: item?.item?.participants[1]?.profile_picture_url,
+            }}
+            style={{width: 44, height: 44, borderRadius: 50}}
+          />
+        )}
+
         <View>
           <Text style={styles.lable}>
             {item?.item?.participants[1]?.username}
@@ -149,7 +134,7 @@ export default function MessageList() {
         </View>
       ) : (
         <>
-          {data.length == 0 ? (
+          {chatData.length == 0 ? (
             <NoMessage />
           ) : (
             <View style={{marginTop: 22}}>
@@ -263,5 +248,13 @@ const styles = StyleSheet.create({
   },
   right: {
     alignItems: 'center',
+  },
+  NameContainer: {
+    backgroundColor: '#ecebebff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    width: 44,
+    height: 44,
   },
 });

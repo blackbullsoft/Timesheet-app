@@ -6,6 +6,7 @@ import {
   Image,
   Pressable,
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import React, {useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
@@ -52,6 +53,11 @@ export default function More() {
   }, [user]);
   return (
     <ScrollView>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="light-content"
+      />
       <Pressable
         style={styles.card}
         onPress={() => navigation.navigate('Dashboard', {screen: 'Profile'})}>

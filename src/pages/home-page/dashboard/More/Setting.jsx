@@ -1,5 +1,23 @@
-import {View, Text, ScrollView, StyleSheet, Switch, Image} from 'react-native';
-import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {Dropdown} from 'react-native-element-dropdown';
+import AntDesign from 'react-native-vector-icons/Entypo';
+
+import {
+  fetchUserSettingRequest,
+  userSetting,
+} from '../../../../actions/userSettingAction';
+import {Mincount} from '../../../../utils/constant';
+import {useNavigation} from '@react-navigation/native';
 const rightGrey = require('../../../../assets/images/icon/rightGrey.png');
 
 export default function Setting() {
@@ -17,6 +35,16 @@ export default function Setting() {
     notifyViaEmailNewsfeed: false,
   });
 
+  const navigation = useNavigation();
+
+  const dispatch = useDispatch();
+  const data = [
+    {label: 'Check page', value: '1'},
+    {label: 'Demo Conversation', value: '2'},
+  ];
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+
   const handleToggleSwitch = key => {
     setIsEnabledObject(prevState => ({
       ...prevState,
@@ -28,6 +56,19 @@ export default function Setting() {
 
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
+  useEffect(() => {
+    console.log('User settin enable');
+    dispatch(fetchUserSettingRequest());
+  }, []);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => console.log('')}>
+          <Text style={{color: 'white', marginRight: 12}}>Save</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   //   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   return (
@@ -83,9 +124,45 @@ export default function Setting() {
         </View>
         <View style={styles.box}>
           <Text style={styles.value}>Reminder before</Text>
-          <View style={styles.right}>
-            <Text style={styles.value}>60 Minutes </Text>
-            <Image source={rightGrey} />
+          <View
+            style={[
+              styles.right,
+              {
+                maxWidth: '47%',
+              },
+            ]}>
+            {/* <Image source={rightGrey} /> */}
+            <Dropdown
+              style={[styles.dropdown, isFocus]}
+              placeholderStyle={styles.placeholderStyle}
+              selectedTextStyle={styles.value}
+              inputSearchStyle={styles.inputSearchStyle}
+              iconStyle={styles.iconStyle}
+              data={Mincount}
+              //   search
+              maxHeight={300}
+              labelField="value"
+              autoScroll={false}
+              valueField="value"
+              placeholder={!isFocus ? '1' : '1'}
+              searchPlaceholder="Search..."
+              value={value || 1}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={item => {
+                setValue(item.value);
+                setIsFocus(false);
+              }}
+              // renderRightIcon={() => (
+              //   <AntDesign
+              //     style={styles.icon}
+              //     color={isFocus ? 'grey' : 'black'}
+              //     name="triangle-right"
+              //     size={20}
+              //   />
+              // )}
+            />
+            <Text style={[styles.value]}>Minutes </Text>
           </View>
         </View>
       </View>
@@ -245,5 +322,33 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    // backgroundColor: 'red',
+  },
+  dropdown: {
+    height: 30,
+    // borderColor: 'gray',
+    // borderWidth: 0.5,
+    // borderRadius: 8,
+    paddingHorizontal: 8,
+    width: '49%',
+    // backgroundColor: 'red',
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
   },
 });

@@ -368,7 +368,7 @@ const EventsList = ({route}) => {
               </Pressable>
             </View>
             <View style={styles.line}></View>
-            <View style={styles.box1}>
+            {/* <View style={styles.box1}>
               <Text style={styles.lable}>Options</Text>
               <Text style={styles.value}>Unselect all</Text>
             </View>
@@ -383,7 +383,7 @@ const EventsList = ({route}) => {
                 }}
                 value={filterToggle?.dayNotes}
               />
-            </View>
+            </View> */}
             <View style={styles.line}></View>
             <View style={styles.box1}>
               <Text style={styles.lable}>Events</Text>
@@ -431,7 +431,7 @@ const EventsList = ({route}) => {
                 value={filterToggle?.unassignedShifts}
               />
             </View>
-            <View style={styles.box}>
+            {/* <View style={styles.box}>
               <Text style={styles.value}>Time off</Text>
               <Switch
                 trackColor={{false: '#767577', true: '#81b0ff'}}
@@ -454,7 +454,7 @@ const EventsList = ({route}) => {
                 }}
                 value={filterToggle?.noShows}
               />
-            </View>
+            </View> */}
             <View style={styles.btnContainer}>
               <View style={styles.btn1}>
                 <Text style={styles.btnText1}>Reset Filters</Text>

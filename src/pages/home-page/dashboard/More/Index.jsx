@@ -172,14 +172,14 @@ export default function Index() {
           headerTitleStyle: {
             fontSize: 12,
           },
-          headerRight: () => (
-            <TouchableOpacity onPress={() => console.log('Image Pressed')}>
-              <Image
-                source={require('../../../../assets/images/icon/menu1.png')}
-                style={{marginRight: 20, width: 5, height: 20}}
-              />
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity onPress={() => console.log('Image Pressed')}>
+          //     <Image
+          //       source={require('../../../../assets/images/icon/menu1.png')}
+          //       style={{marginRight: 20, width: 5, height: 20}}
+          //     />
+          //   </TouchableOpacity>
+          // ),
           headerBackground: () => (
             <LinearGradient
               colors={['#0085FE', '#01417B']}

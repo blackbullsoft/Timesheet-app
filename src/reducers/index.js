@@ -12,6 +12,7 @@ import notificationReducer from './notificationReducer';
 import shiftReducer from './shiftReducer';
 import chatReducer from './chatReducer';
 import newsFeedReducer from './newsFeedReducer';
+import userSettingReducer from './userSettingReducer';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   shift: shiftReducer,
   chat: chatReducer,
   newsFeed: newsFeedReducer,
+  userSettings: userSettingReducer,
 });
 
 export default rootReducer;
