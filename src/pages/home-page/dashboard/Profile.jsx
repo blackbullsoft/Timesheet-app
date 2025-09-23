@@ -57,7 +57,7 @@ export default function Profile({route}) {
       [key]: value,
     }));
   };
-  console.log('datadata Profile', countryCode, userEditData);
+  console.log('datadata Profile', countryCode, userEditData, data);
   useEffect(() => {
     dispatch(fetchProfile());
   }, []);

@@ -1,7 +1,8 @@
-import {call, put, takeLatest} from 'redux-saga/effects';
+import {call, put, take, takeLatest} from 'redux-saga/effects';
 import axios from 'axios';
 import {getToken, removeToken, storeToken} from '../utils/storage';
 import {Platform} from 'react-native';
+import {showToast} from '../actions/toastAction';
 
 const API_BASE_URL = 'http://174.138.57.202:8000';
 
@@ -149,9 +150,88 @@ function* fetchComment(action) {
     });
   }
 }
+
+function* AddFeed(action) {
+  console.log('AddFee actiond', action.payload.newsFeedText);
+  // console.log('actionEdit Image', action.payload.image, action.payload.image);
+
+  try {
+    const token = yield call(getToken);
+    console.log('Token in EditProfileSaga', token);
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+
+    // Build FormData
+    const formData = new FormData();
+
+    // if (action.payload.image) {
+    //   formData.append('profile_picture', {
+    //     uri: action.payload.image.uri,
+    //     type: action.payload.image.type,
+    //     name: action.payload.image.fileName || `photo_${Date.now()}.jpg`,
+    //   });
+    // }
+
+    formData.append('content', action.payload.newsFeedText);
+    // formData.append('email', action.payload.data.email);
+    // formData.append('mobile', action.payload.data.mobile);
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+
+    // Make PUT request
+    const response = yield call(
+      axios.post,
+      `${API_BASE_URL}/newsfeed/post`,
+      formData,
+      config,
+    );
+
+    // const data = response?.data || {};
+    const payload = {
+      status: response.status,
+      data: response.data,
+    };
+    console.log('Add news feed response', response);
+
+    yield put({type: 'ADD_NEWSFEED_SUCCESS', payload: payload});
+    if (response.status == 201) {
+      yield put(
+        showToast(
+          'success',
+          'Feed create Successfully',
+          // error?.response?.data?.error || 'Something went wrong!',
+        ),
+      );
+    }
+  } catch (error) {
+    console.error(
+      'EditProfileSaga error:',
+      error.response?.data || error.message,
+    );
+    yield put({
+      type: 'ADD_NEWSFEED_FAILED',
+      payload: error?.response?.data?.error || 'Something went wrong!',
+    });
+    yield put(
+      showToast(
+        'error',
+        'Profile Update failed',
+        error?.response?.data?.error || 'Something went wrong!',
+      ),
+    );
+  }
+}
 export default function* newsFeedSaga() {
   yield takeLatest('FETCH_FEED_REQUEST', newsFeedList);
   yield takeLatest('LIKE_FEED_REQUEST', likeAndDislike);
   yield takeLatest('COMMENT_FEED_REQUEST', addComment);
   yield takeLatest('FETCH_COMMENT_REQUEST', fetchComment);
+  yield takeLatest('ADD_NEWSFEED_REQUEST', AddFeed);
 }

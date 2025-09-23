@@ -8,15 +8,30 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {ScrollView} from 'react-native-gesture-handler';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/Entypo';
 const Pin = require('../../../../assets/images/icon/pin.png');
 import {launchImageLibrary} from 'react-native-image-picker';
+import {useNavigation} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  AddFeed,
+  clearNewsFeedResponse,
+} from '../../../../actions/newsfeedAction';
+import {showToast} from '../../../../actions/toastAction';
+import {fetchUserProfile} from '../../../../actions/userProfileAction';
 
 const AddNewsFeed = () => {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const navigation = useNavigation();
+  const [newsFeedText, setNewsFeedText] = useState('');
+  const {addnewsFeedData} = useSelector(state => state.newsFeed);
+  const {data, loading} = useSelector(state => state.profile);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const showSubscription = Keyboard.addListener('keyboardDidShow', () => {
       setKeyboardVisible(true);
@@ -30,56 +45,39 @@ const AddNewsFeed = () => {
       hideSubscription.remove();
     };
   }, []);
-  const data = [
-    {label: 'Check page', value: '1'},
-    {label: 'Demo Conversation', value: '2'},
-  ];
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
-  const [selectedImage, setSelectedImage] = useState();
 
-  const openGallery = () => {
-    const options = {
-      mediaType: 'photo', // or 'video', or 'mixed'
-      quality: 1,
-    };
+  // const [value, setValue] = useState(null);
+  // const [isFocus, setIsFocus] = useState(false);
+  // const [selectedImage, setSelectedImage] = useState();
 
-    launchImageLibrary(options, response => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else {
-        const source = {uri: response.assets[0].uri};
-        setSelectedImage(source);
-      }
+  const creatNewFeed = () => {
+    if (!newsFeedText) {
+      dispatch(showToast('error', 'Enter content', '.'));
+    } else if (data.role == 1) {
+      dispatch(AddFeed(newsFeedText));
+    } else {
+      dispatch(showToast('error', 'Only admin can post', '.'));
+    }
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={() => creatNewFeed()}>
+          <Text style={{color: 'white', marginRight: 12}}>Save</Text>
+        </TouchableOpacity>
+      ),
     });
-  };
+  }, [navigation, newsFeedText]);
 
-  const AddPost = () => {
-    const formdata = new FormData();
-    formdata.append(
-      'content',
-      'Just a simple text post without any media files!',
-    );
+  useEffect(() => {
+    if (addnewsFeedData && addnewsFeedData.status == 201) {
+      navigation.goBack();
+      dispatch(clearNewsFeedResponse());
+    }
+  }, [addnewsFeedData]);
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        Authorization:
-          'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjI2NywidXNlcm5hbWUiOiJDaGFybHRvbiBTY2ljbHVuYSIsInJvbGUiOiIxIiwiZW1haWwiOiJjaGFybHRvbkBlcHNtYWx0YS5jb20iLCJzdGF0dXMiOiIxIiwiaWF0IjoxNzU3NDg3NTU0LCJleHAiOjE3NTc1NzM5NTR9.eW4P7cPE2S6hJzAAAzJTy9fN6AfmA4JJLf6gm7lgLEQ',
-        // ⚠️ Don't set Content-Type, fetch will do it automatically for FormData
-      },
-      body: JSON.stringify({
-        content: 'Just a simple text post without any media files!',
-      }),
-    };
-
-    fetch('http://174.138.57.202:8000/newsfeed/post', requestOptions)
-      .then(response => response.json())
-      .then(result => console.log(result))
-      .catch(error => console.error(error));
-  };
+  console.log('addnewsFeedData', addnewsFeedData, data);
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -98,7 +96,7 @@ const AddNewsFeed = () => {
             margin: 20,
             borderRadius: 8,
           }}>
-          <Dropdown
+          {/* <Dropdown
             style={[styles.dropdown, isFocus && {borderColor: 'blue'}]}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
@@ -126,9 +124,13 @@ const AddNewsFeed = () => {
                 size={20}
               />
             )}
-          />
+          /> */}
           <TextInput
             placeholder="Share Something..."
+            onChangeText={text => {
+              console.log('Text', text);
+              setNewsFeedText(text);
+            }}
             //   style={styles.inputStyle}
             style={{
               //   marginTop: 20,
@@ -145,7 +147,7 @@ const AddNewsFeed = () => {
             multiline={true}
             // onChangeText={setInputValue}
           />
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => {
               // openGallery();
               AddPost();
@@ -159,7 +161,7 @@ const AddNewsFeed = () => {
               }}>
               Add Attachment
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         {/* {renderLabel()} */}
       </ScrollView>

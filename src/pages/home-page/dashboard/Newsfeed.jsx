@@ -9,7 +9,7 @@ import {
   Touchable,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import NewFeedPage from './NewsFeeds/NewFeedPage';
 import {useDispatch, useSelector} from 'react-redux';
 import {likeAndDislike, newsFeedList} from '../../../actions/newsfeedAction';
@@ -93,8 +93,8 @@ export default function Newsfeed() {
       setRefreshing(false);
     }
   }, [loading]);
-  console.log('newsFeed all list', newsFeedData);
-  console.log('like', like);
+  // console.log('newsFeed all list', newsFeedData);
+  // console.log('like', like);
   // const formatDateTime = dateString => {
   //   const date = moment(dateString);
 

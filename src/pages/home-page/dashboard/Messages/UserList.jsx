@@ -19,6 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import {fetchCoworkersList} from '../../../../actions/coworkerAction';
 import {useNavigation} from '@react-navigation/native';
 import {createConversations} from '../../../../actions/chatAction';
+import {GetName} from '../../../../utils/constant';
 const data = [
   {
     name: 'Vinay',
@@ -72,12 +73,19 @@ const Card = ({item, setSelectedUser}) => {
         handlePress(); // pass an argument if needed
       }}>
       <View style={styles.left}>
-        <Image
-          source={{
-            uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-          }}
-          style={{width: 44, height: 44, borderRadius: 50}}
-        />
+        {item?.profile_picture_url == null ? (
+          <View style={styles.NameContainer}>
+            <Text>{GetName(item?.username)}</Text>
+          </View>
+        ) : (
+          <Image
+            source={{
+              uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+            }}
+            style={{width: 44, height: 44, borderRadius: 50}}
+          />
+        )}
+
         <View>
           <Text style={styles.lable}>{item?.username}</Text>
         </View>
@@ -266,5 +274,13 @@ const styles = StyleSheet.create({
     height: 20,
     borderWidth: 1,
     borderColor: '#0000003D',
+  },
+  NameContainer: {
+    backgroundColor: '#ecebebff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    width: 44,
+    height: 44,
   },
 });

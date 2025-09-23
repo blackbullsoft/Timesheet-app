@@ -5,6 +5,7 @@ const initialState = {
   like: null,
   comment: null,
   commentList: null,
+  addnewsFeedData: null,
 };
 
 const newsFeedReducer = (state = initialState, action) => {
@@ -81,7 +82,6 @@ const newsFeedReducer = (state = initialState, action) => {
 
     case 'COMMENT_FEED_FAILED':
       return {...state, error: action.payload, loading: false}; // failure
-
     // Fetch Comments for a Feed
     case 'FETCH_COMMENT_REQUEST':
       return {...state, loading: true}; // when request starts
@@ -89,6 +89,19 @@ const newsFeedReducer = (state = initialState, action) => {
       return {...state, commentList: action.payload, loading: false};
     case 'FETCH_COMMENT_FAILED':
       return {...state, error: action.payload, loading: false}; // failure
+
+    case 'ADD_NEWSFEED_REQUEST':
+      return {...state, loading: true}; // when request starts
+    case 'ADD_NEWSFEED_SUCCESS':
+      return {...state, addnewsFeedData: action.payload, loading: false};
+    case 'ADD_NEWSFEED_FAILED':
+      return {...state, error: action.payload, loading: false}; // failure
+
+    case 'CLEAR_NEWSFEED_RESPONSE':
+      return {...state, addnewsFeedData: null};
+
+    case 'CLEAR_COMMENT_RESPONSE':
+      return {...state, commentList: null};
     default:
       return state;
   }

@@ -13,7 +13,11 @@ import React, {useEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {TextInput} from 'react-native-gesture-handler';
 import {useDispatch, useSelector} from 'react-redux';
-import {addComment, fetchComment} from '../../../../actions/newsfeedAction';
+import {
+  addComment,
+  clearCommeent,
+  fetchComment,
+} from '../../../../actions/newsfeedAction';
 import {formatDateTime} from '../../../../utils/constant';
 const Eyes = require('../../../../assets/images/icon/eyes.png');
 const Like1 = require('../../../../assets/images/icon/like1.png');
@@ -68,6 +72,7 @@ export default function NewFeedPage({route}) {
   }, []);
 
   useEffect(() => {
+    dispatch(clearCommeent());
     fetchTheComment();
   }, []);
 
@@ -165,7 +170,7 @@ export default function NewFeedPage({route}) {
               />
               <View>
                 <Text style={styles.lable}>{newsFeedData?.username}</Text>
-                <Text style={styles.value}>Demo Conversation</Text>
+                {/* <Text style={styles.value}>Demo Conversation</Text> */}
               </View>
             </View>
             <View style={{height: '100%'}}>
@@ -190,12 +195,12 @@ export default function NewFeedPage({route}) {
                   </Text>
                 </View>
               </View>
-              <View style={styles.right}>
+              {/* <View style={styles.right}>
                 <Text style={styles.value}>
                   <Image source={Eyes} style={{width: 16, height: 9}} />
                   0/0
                 </Text>
-              </View>
+              </View> */}
             </View>
             <View style={styles.thinLine}></View>
             <View style={styles.box1}>
@@ -213,7 +218,7 @@ export default function NewFeedPage({route}) {
           </View>
           <View style={styles.bottomSendMessage}>
             <View style={styles.messageBox}>
-              <Image source={Pin} style={styles.iconStyle} />
+              {/* <Image source={Pin} style={styles.iconStyle} /> */}
               <TextInput
                 placeholder="Write a comment"
                 style={styles.inputStyle}

@@ -18,6 +18,14 @@ export const fetchComment = feedId => ({
   payload: {feedId},
 });
 
+export const AddFeed = newsFeedText => ({
+  type: 'ADD_NEWSFEED_REQUEST',
+  payload: {newsFeedText},
+});
+
+export const clearNewsFeedResponse = () => ({type: 'CLEAR_NEWSFEED_RESPONSE'});
+export const clearCommeent = () => ({type: 'CLEAR_COMMENT_RESPONSE'});
+
 // export const sendMessage = messagBody => ({
 //   type: 'SEND_MESSAGE_REQUEST',
 //   payload: {messagBody},
