@@ -9,8 +9,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  TouchableOpacity,
 } from 'react-native';
-import React, {use, useEffect, useState} from 'react';
+import React, {use, useEffect, useLayoutEffect, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -22,76 +23,8 @@ import {
 import moment from 'moment';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import LoadingAnimation from '../../../../component/Loader';
+import {GetName} from '../../../../utils/constant';
 const Pin = require('../../../../assets/images/icon/pin.png');
-
-const data = [
-  {
-    msg: 'ok ',
-    time: '1:00 pm',
-    you: true,
-    id: 1,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssssok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: false,
-    id: 2,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: true,
-    id: 3,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: true,
-    id: 4,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: false,
-    id: 5,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: true,
-    id: 6,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssssok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: false,
-    id: 7,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: true,
-    id: 8,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: true,
-    id: 9,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: false,
-    id: 10,
-  },
-  {
-    msg: 'ok nnnssssssssssssssssssssssss',
-    time: '1:00 pm',
-    you: false,
-    id: 11,
-  },
-];
 
 export default function Message({route}) {
   const {conversationData} = route.params;
@@ -189,7 +122,55 @@ export default function Message({route}) {
     );
   };
 
-  console.log('userdata', sentMessage, loading);
+  const CustomHeader = () => {
+    // const navigation = useNavigation();
+
+    return (
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        {conversationData?.item.participants[1].profile_picture_url == null ? (
+          <View style={styles.NameContainer}>
+            <Text>
+              {GetName(conversationData?.item.participants[1].username)}
+            </Text>
+          </View>
+        ) : (
+          <Image
+            source={{
+              uri: conversationData?.item.participants[1].profile_picture_url,
+            }}
+            style={{width: 44, height: 44, borderRadius: 50}}
+          />
+        )}
+
+        <View style={{marginLeft: 8}}>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 16,
+              fontWeight: 700,
+              color: '#ffffff',
+            }}>
+            {conversationData?.item.participants[1].username}
+          </Text>
+          <Text
+            style={{
+              color: 'white',
+              fontSize: 12,
+              fontWeight: 400,
+              color: '#65B6FF',
+            }}>
+            Online
+          </Text>
+        </View>
+      </View>
+    );
+  };
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => <CustomHeader />,
+    });
+  }, [navigation, conversationData]);
+  console.log('userdata', conversationData);
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -320,5 +301,13 @@ const styles = StyleSheet.create({
   iconStyle: {
     width: 12,
     height: 18,
+  },
+  NameContainer: {
+    backgroundColor: '#ecebebff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    width: 44,
+    height: 44,
   },
 });

@@ -209,6 +209,7 @@ function* checkAutoLogin() {
 }
 
 function* fogotPasswordEmailSendUserSaga(action) {
+  console.log('fogotPasswordEmailSendUserSaga');
   try {
     const response = yield call(
       axios.post,

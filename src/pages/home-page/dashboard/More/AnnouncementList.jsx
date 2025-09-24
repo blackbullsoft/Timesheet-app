@@ -9,10 +9,11 @@ import {
   TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
+  RefreshControl,
 } from 'react-native';
 const Eyes = require('../../../../assets/images/icon/eyes.png');
-import React, {useEffect, useState} from 'react';
-import {useNavigation} from '@react-navigation/native';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   fetchAnnouncedUserSaga,
@@ -24,6 +25,7 @@ import {formatDateTime} from '../../../../utils/constant';
 export default function AnnouncementList() {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
+  const [refreshing, setRefreshing] = React.useState(false);
 
   const dispatch = useDispatch();
   const {announcements, loading, announcedUser} = useSelector(
@@ -35,8 +37,33 @@ export default function AnnouncementList() {
   const getAnnouncedUser = id => {
     dispatch(fetchAnnouncedUserSaga(id));
   };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(fetchAnnouncementsList());
+    }, [dispatch]),
+  );
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(fetchAnnouncementsList());
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('AnnouncementCreate')}>
+          <Image
+            source={require('../../../../assets/images/icon/add.png')}
+            style={{width: 18, height: 18, marginRight: 12}}
+          />
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
   const Card = item => {
-    const navigation = useNavigation();
     return (
       <Pressable
         style={styles.card}
@@ -118,6 +145,9 @@ export default function AnnouncementList() {
       ) : (
         <>
           <FlatList
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
             data={announcements}
             renderItem={({item}) => <Card item={item} />}
             keyExtractor={item => item.id.toString()}

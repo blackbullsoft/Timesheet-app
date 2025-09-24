@@ -46,32 +46,18 @@ const data = [
   },
 ];
 
-const Card = ({item, setSelectedUser}) => {
-  const [isSelected, setSelection] = useState(false);
-  const [isCheck, setIsCheck] = useState(false);
-  const handlePress = () => {
-    setIsCheck(prev => !prev);
+const Card = React.memo(({item, selectedUser, setSelectedUser}) => {
+  const isChecked = selectedUser.some(u => u.id === item.id);
 
+  const handlePress = () => {
     setSelectedUser(prev => {
       const exists = prev.find(u => u.id === item.id);
-      if (exists) {
-        // remove user
-        return prev.filter(u => u.id !== item.id);
-      } else {
-        // add user
-        return [...prev, item];
-      }
+      return exists ? prev.filter(u => u.id !== item.id) : [...prev, item];
     });
   };
 
-  // console.log()
-
   return (
-    <Pressable
-      style={styles.card}
-      onPress={() => {
-        handlePress(); // pass an argument if needed
-      }}>
+    <Pressable style={styles.card} onPress={handlePress}>
       <View style={styles.left}>
         {item?.profile_picture_url == null ? (
           <View style={styles.NameContainer}>
@@ -79,28 +65,24 @@ const Card = ({item, setSelectedUser}) => {
           </View>
         ) : (
           <Image
-            source={{
-              uri: 'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-            }}
+            source={{uri: item.profile_picture_url}}
             style={{width: 44, height: 44, borderRadius: 50}}
           />
         )}
-
-        <View>
-          <Text style={styles.lable}>{item?.username}</Text>
-        </View>
+        <Text style={styles.lable}>{item?.username}</Text>
       </View>
       <View style={styles.right}>
-        {isCheck ? (
-          <Icon name={'check-square'} size={24} color="#01417B" />
+        {isChecked ? (
+          <Icon name="check-square" size={24} color="#01417B" />
         ) : (
-          <View style={styles.square}></View>
+          <View style={styles.square} />
         )}
       </View>
     </Pressable>
   );
-};
-export default function UserList() {
+});
+
+export default function UserList({onSelectUsers}) {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [userChatList, setUserChatList] = useState([]);
@@ -149,6 +131,11 @@ export default function UserList() {
   useEffect(() => {
     setUserChatList(coworkers);
   }, [coworkers]);
+  useEffect(() => {
+    if (onSelectUsers) {
+      onSelectUsers(selectedUser);
+    }
+  }, [selectedUser]);
   console.log('selectedUser', selectedUser);
   console.log('COnversation', userChatList);
   return (
@@ -173,10 +160,19 @@ export default function UserList() {
           ) : (
             <View style={{marginTop: 22}}>
               <FlatList
-                data={userChatList}
+                data={userChatList.slice(0, 20)}
                 renderItem={({item}) => (
-                  <Card item={item} setSelectedUser={setSelectedUser} />
+                  <Card
+                    item={item}
+                    selectedUser={selectedUser}
+                    setSelectedUser={setSelectedUser}
+                  />
                 )}
+                initialNumToRender={20}
+                maxToRenderPerBatch={10}
+                windowSize={5}
+                removeClippedSubviews={true}
+                updateCellsBatchingPeriod={50}
                 keyExtractor={item => item.id.toString()}
               />
             </View>

@@ -114,7 +114,6 @@ const styles = StyleSheet.create({
     fontWeight: 600,
     height: 80,
     marginTop: 16,
-    flex: 1,
   },
   btn: {
     width: '90%',

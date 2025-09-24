@@ -110,18 +110,18 @@ export default function Index() {
         options={{
           headerShown: true,
           headerTintColor: 'white',
-          headerTitle: () => <CustomHeader />,
+          // headerTitle: () => <CustomHeader />,
           headerTitleStyle: {
             fontSize: 12,
           },
-          headerRight: () => (
-            <TouchableOpacity>
-              <Image
-                source={require('../../../../assets/images/icon/add.png')}
-                style={{width: 18, height: 18, marginRight: 12}}
-              />
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity>
+          //     <Image
+          //       source={require('../../../../assets/images/icon/add.png')}
+          //       style={{width: 18, height: 18, marginRight: 12}}
+          //     />
+          //   </TouchableOpacity>
+          // ),
           headerBackground: () => (
             <LinearGradient
               colors={['#0085FE', '#01417B']}

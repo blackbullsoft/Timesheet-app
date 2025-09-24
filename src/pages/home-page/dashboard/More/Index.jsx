@@ -10,6 +10,7 @@ import Feedback from './Feedback';
 import Setting from './Setting';
 import HelpAndSupport from './HelpAndSupport';
 import UserProfile from '../Events/UserProfile';
+import AnnouncementCreate from './AnnouncementCreate';
 const Stack = createStackNavigator();
 export default function Index() {
   return (
@@ -71,14 +72,14 @@ export default function Index() {
           headerTitleStyle: {
             fontSize: 12,
           },
-          headerRight: () => (
-            <TouchableOpacity>
-              <Image
-                source={require('../../../../assets/images/icon/add.png')}
-                style={{width: 18, height: 18, marginRight: 12}}
-              />
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity onPress={() =>}>
+          //     <Image
+          //       source={require('../../../../assets/images/icon/add.png')}
+          //       style={{width: 18, height: 18, marginRight: 12}}
+          //     />
+          //   </TouchableOpacity>
+          // ),
           headerBackground: () => (
             <LinearGradient
               colors={['#0085FE', '#01417B']}
@@ -90,8 +91,8 @@ export default function Index() {
         }}
       />
       <Stack.Screen
-        name="Announcement"
-        component={Announcement}
+        name="AnnouncementCreate"
+        component={AnnouncementCreate}
         options={{
           headerShown: true,
           headerTintColor: 'white',
@@ -100,14 +101,14 @@ export default function Index() {
           headerTitleStyle: {
             fontSize: 12,
           },
-          headerRight: () => (
-            <TouchableOpacity>
-              <Image
-                source={require('../../../../assets/images/icon/dots.png')}
-                style={{width: 4, height: 16, marginRight: 12}}
-              />
-            </TouchableOpacity>
-          ),
+          // headerRight: () => (
+          //   <TouchableOpacity>
+          //     <Image
+          //       source={require('../../../../assets/images/icon/dots.png')}
+          //       style={{width: 4, height: 16, marginRight: 12}}
+          //     />
+          //   </TouchableOpacity>
+          // ),
           headerBackground: () => (
             <LinearGradient
               colors={['#0085FE', '#01417B']}

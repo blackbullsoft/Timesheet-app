@@ -141,7 +141,7 @@ export default function NewFeedPage({route}) {
     );
   };
 
-  console.log('isKeyboardOpen', newsFeedData);
+  console.log('isKeyboardOpen', commentList);
   return (
     <KeyboardAvoidingView
       style={{flex: 1}}
@@ -203,8 +203,14 @@ export default function NewFeedPage({route}) {
               </View> */}
             </View>
             <View style={styles.thinLine}></View>
-            <View style={styles.box1}>
-              <View style={styles.left}>
+            <View
+              style={[
+                styles.box1,
+                {
+                  marginBottom: 10,
+                },
+              ]}>
+              {/* <View style={styles.left}>
                 <View style={styles.iconBox}>
                   <Image source={Like} style={{width: 16, height: 16}} />
                   <Text style={styles.value}>Likes</Text>
@@ -213,7 +219,7 @@ export default function NewFeedPage({route}) {
                   <Image source={Comment} style={{width: 20, height: 16}} />
                   <Text style={styles.value}>Comments</Text>
                 </View>
-              </View>
+              </View> */}
             </View>
           </View>
           <View style={styles.bottomSendMessage}>
@@ -287,10 +293,11 @@ const styles = StyleSheet.create({
     color: '#555555',
   },
   line: {
-    height: 8,
+    // height: 8,
     backgroundColor: '#ECEBEB',
     borderColor: '#0000001F',
-    borderWidth: 1,
+    borderWidth: 0.3,
+    marginVertical: 10,
   },
   card: {
     width: '95%',

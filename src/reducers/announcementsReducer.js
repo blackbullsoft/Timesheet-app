@@ -3,6 +3,7 @@ const initialState = {
   loading: false,
   error: null,
   announcedUser: [],
+  annocementCreated: null,
 };
 
 const announcementsReducer = (state = initialState, action) => {
@@ -23,6 +24,17 @@ const announcementsReducer = (state = initialState, action) => {
 
     case 'FETCH_ANNOUNCED_USER_FAILED':
       return {...state, error: action.payload, loading: false};
+
+    // Create Announcement
+    case 'CREATE_ANNOUNCEMENT_REQUEST':
+      return {...state, loading: true};
+    case 'CREATE_ANNOUNCEMENT_SUCCESS':
+      return {...state, annocementCreated: action.payload, loading: false};
+    case 'CREATE_ANNOUNCEMENT_FAILED':
+      return {...state, error: action.payload, loading: false};
+
+    case 'CLEAR_ANNOUNCEMENT_MESSAGE':
+      return {...state, annocementCreated: null, loading: false};
 
     default:
       return state;

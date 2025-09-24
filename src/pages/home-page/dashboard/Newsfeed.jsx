@@ -41,11 +41,11 @@ export default function Newsfeed() {
     getNewsFeedData();
   }, []);
 
-  // useEffect(() => {
-  //   if (newsFeedData?.feeds.length > 0) {
-  //     setNewsFeedDataList(newsFeedData?.feeds);
-  //   }
-  // }, [newsFeedData]);
+  useEffect(() => {
+    if (newsFeedData?.feeds.length > 0) {
+      setNewsFeedDataList(newsFeedData?.feeds);
+    }
+  }, [newsFeedData]);
 
   const likeDislike = newsFeedId => {
     setNewsFeedTheId(newsFeedId);
@@ -53,27 +53,27 @@ export default function Newsfeed() {
     dispatch(likeAndDislike(newsFeedId));
   };
 
-  const handleLike = () => {
-    console.log('handleLike', like, newsFeedTheId, newsFeedDataList);
-    if (like != null && newsFeedTheId != null) {
-      const updatedData = newsFeedDataList.map(item => {
-        if (item.id === newsFeedTheId) {
-          const newIsLiked = item.is_liked === 1 ? 0 : 1; // toggle like
-          return {
-            ...item,
-            is_liked: newIsLiked,
-            total_likes:
-              newIsLiked === 1
-                ? item.total_likes + 1
-                : Math.max(item.total_likes - 1, 0), // prevent negative
-          };
-        }
-        return item;
-      });
+  const handleLike = newsFeedTheId => {
+    if (newsFeedTheId == null) return;
 
-      console.log('Updated afterLike ', updatedData);
-      setNewsFeedDataList(updatedData); // update state so UI rerenders
-    }
+    const updatedData = newsFeedDataList.map(item => {
+      if (item.id === newsFeedTheId) {
+        const newIsLiked = item.is_liked == 1 ? 0 : 1;
+        return {
+          ...item,
+          is_liked: newIsLiked,
+          total_likes:
+            newIsLiked === 1
+              ? item.total_likes + 1
+              : Math.max(item.total_likes - 1, 0),
+        };
+      }
+      return item;
+    });
+
+    console.log('Updated afterLike', JSON.parse(JSON.stringify(updatedData)));
+    setNewsFeedDataList(updatedData);
+    likeDislike(newsFeedTheId);
   };
 
   useEffect(() => {
@@ -199,7 +199,8 @@ export default function Newsfeed() {
               <View style={styles.left}>
                 <TouchableOpacity
                   style={styles.iconBox}
-                  onPress={() => likeDislike(item.id)}>
+                  // onPress={() => likeDislike(item.id)}
+                  onPress={() => handleLike(item.id)}>
                   <Image
                     source={item?.is_liked == '1' ? Like1 : Like}
                     style={{width: 16, height: 16}}
@@ -246,7 +247,8 @@ export default function Newsfeed() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          data={newsFeedData?.feeds}
+          // data={newsFeedData?.feeds}
+          data={newsFeedDataList}
           renderItem={({item}) => <Card item={item} />}
           keyExtractor={i => i.id}
           contentContainerStyle={{paddingBottom: 20}}

@@ -13,3 +13,10 @@ export const fetchAnnouncedUserSaga = id => ({
   type: 'FETCH_ANNOUNCED_USER_REQUEST',
   payload: {id},
 });
+
+export const createAnnoucement = (announcementData, userId) => ({
+  type: 'CREATE_ANNOUNCEMENT_REQUEST',
+  payload: {announcementData, userId},
+});
+
+export const clearAnnouncement = () => ({type: 'CLEAR_ANNOUNCEMENT_MESSAGE'});
