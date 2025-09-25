@@ -18,14 +18,16 @@ function* feedbackPostSaga(action) {
         'Content-Type': 'application/json',
       },
     };
+    const payloadData = {
+      rating: action.payload.totalStart,
+      // feedback: action.payload.feedback,
+      message: action.payload.feedback,
+    };
+    console.log('payloadData', payloadData);
     const response = yield call(
       axios.post,
-      `${API_BASE_URL}/events/view`,
-      {
-        star: action.payload.totalStart,
-        // feedback: action.payload.feedback,
-        feedback: 'Rohan',
-      },
+      `${API_BASE_URL}/rating/feedback-insert`,
+      payloadData,
       config,
     );
     const data = response?.data || [];
@@ -33,7 +35,7 @@ function* feedbackPostSaga(action) {
     console.log('responseresponse', response);
     yield put({type: 'SEND_FEEDBACK_SUCCESS', payload: data});
   } catch (error) {
-    console.log('', error);
+    console.log('Error ', error);
     yield put({
       type: 'SEND_FEEDBACK_FAILED',
       payload: error?.response?.data?.error || 'Something went wrong!',
