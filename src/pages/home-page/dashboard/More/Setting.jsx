@@ -11,6 +11,7 @@ import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/Entypo';
+import notifee, {TriggerType, AndroidImportance} from '@notifee/react-native';
 
 import {
   clearUpdateSettingResponse,
@@ -21,6 +22,7 @@ import {
 import {Mincount} from '../../../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {scheduleAlarm} from '../../../../component/noification/ScheduleNotification';
 const rightGrey = require('../../../../assets/images/icon/rightGrey.png');
 
 export default function Setting() {
@@ -64,6 +66,17 @@ export default function Setting() {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
 
+  const [enabled, setEnabled] = useState();
+
+  const toggleAlarm = async () => {
+    if (!enabled) {
+      await scheduleAlarm(1); // 10 min alarm
+      setEnabled(true);
+    } else {
+      await notifee.cancelAllNotifications();
+      setEnabled(false);
+    }
+  };
   const handleToggleSwitch = (key, value) => {
     setIsEnabledObject(prevState => {
       if (key === 'shift_alarm_minutes') {
@@ -93,6 +106,10 @@ export default function Setting() {
     fetchFcmToken();
   }, []);
 
+  useEffect(() => {
+    // toggleAlarm();
+  }, [isEnabled]);
+
   const saveUserSetting = () => {
     dispatch(updateUserSettingRequest(isEnabledObject, fcmToken));
   };
@@ -108,6 +125,7 @@ export default function Setting() {
 
   useEffect(() => {
     if (userSettingList) {
+      setEnabled(userSettingList?.shift_alarm_enabled == 0 ? true : false);
       const data = {
         shift_alarm_enabled:
           userSettingList?.shift_alarm_enabled == 0 ? true : false,
@@ -142,7 +160,7 @@ export default function Setting() {
 
   console.log('userSettingUpdate', userSettingUpdate);
   //   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
-  console.log('userSettingList', isEnabledObject);
+  console.log('userSettingList', enabled);
   return (
     <ScrollView>
       {/* <View style={styles.container}>
@@ -181,7 +199,7 @@ export default function Setting() {
       </View> */}
       <View style={styles.line}></View>
       <View style={styles.container}>
-        <Text style={styles.lable}>Shift alarms</Text>
+        {/* <Text style={styles.lable}>Shift alarms</Text>
         <View style={styles.box}>
           <Text style={styles.value}>Enable Shift alarms</Text>
           <Switch
@@ -193,8 +211,8 @@ export default function Setting() {
             onValueChange={() => handleToggleSwitch('shift_alarm_enabled')}
             value={isEnabledObject.shift_alarm_enabled}
           />
-        </View>
-        <View style={styles.box}>
+        </View> */}
+        {/* <View style={styles.box}>
           <Text style={styles.value}>Reminder before</Text>
           <View
             style={[
@@ -203,7 +221,7 @@ export default function Setting() {
                 maxWidth: '47%',
               },
             ]}>
-            {/* <Image source={rightGrey} /> */}
+         
             <Dropdown
               style={[styles.dropdown, isFocus]}
               placeholderStyle={styles.placeholderStyle}
@@ -227,29 +245,15 @@ export default function Setting() {
                 handleToggleSwitch('shift_alarm_minutes', item.value);
                 setIsFocus(false);
               }}
-              // renderRightIcon={() => (
-              //   <AntDesign
-              //     style={styles.icon}
-              //     color={isFocus ? 'grey' : 'black'}
-              //     name="triangle-right"
-              //     size={20}
-              //   />
-              // )}
             />
             <Text style={[styles.value]}>Minutes </Text>
           </View>
-        </View>
+        </View> */}
       </View>
       <View style={styles.line}></View>
       <View style={styles.container}>
         <Text style={styles.lable}>Dashboard notifications</Text>
-        <View style={styles.box}>
-          <Text style={styles.value}>Notify Me About</Text>
-          <View style={styles.right}>
-            <Text style={styles.value}>All new dashboar.. </Text>
-            <Image source={rightGrey} />
-          </View>
-        </View>
+
         <View style={styles.box}>
           <Text style={styles.value}>Notify Via Push Notifications</Text>
           <Switch
@@ -282,13 +286,7 @@ export default function Setting() {
       <View style={styles.line}></View>
       <View style={styles.container}>
         <Text style={styles.lable}>Massage notifications</Text>
-        <View style={styles.box}>
-          <Text style={styles.value}>Notify Me About</Text>
-          <View style={styles.right}>
-            <Text style={styles.value}>All new Messages </Text>
-            <Image source={rightGrey} />
-          </View>
-        </View>
+
         <View style={styles.box}>
           <Text style={styles.value}>Notify Via Push Notifications</Text>
           <Switch
@@ -321,13 +319,6 @@ export default function Setting() {
       <View style={styles.line}></View>
       <View style={styles.container}>
         <Text style={styles.lable}>Newsfeed notifications</Text>
-        <View style={styles.box}>
-          <Text style={styles.value}>Notify Me About</Text>
-          <View style={styles.right}>
-            <Text style={styles.value}>All new Posts </Text>
-            <Image source={rightGrey} />
-          </View>
-        </View>
         <View style={styles.box}>
           <Text style={styles.value}>Notify Via Push Notifications</Text>
           <Switch

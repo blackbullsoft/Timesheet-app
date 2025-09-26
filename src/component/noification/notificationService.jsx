@@ -11,6 +11,13 @@ export async function setupNotificationChannel() {
   return channelId;
 }
 
+export async function setupChannel() {
+  await notifee.createChannel({
+    id: 'alarm',
+    name: 'Shift Alarm',
+    importance: AndroidImportance.HIGH,
+  });
+}
 export async function showNotification(title, body) {
   const channelId = await setupNotificationChannel();
 

@@ -15,6 +15,7 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import ScrollVIewComp from './src/pages/login/ScrollVIewComp';
 import notifee from '@notifee/react-native';
 import {
+  setupChannel,
   setupNotificationChannel,
   showNotification,
 } from './src/component/noification/notificationService';
@@ -27,6 +28,7 @@ export default function App() {
 
   useEffect(() => {
     setupNotificationChannel();
+    setupChannel();
     const requestUserPermission = async () => {
       const authStatus = await messaging().requestPermission();
       const enabled =
