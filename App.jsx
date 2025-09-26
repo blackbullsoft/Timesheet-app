@@ -78,6 +78,8 @@ export default function App() {
       await showNotification(title, body);
     });
 
+    console.log('remoteMessage'.remoteMessage);
+
     // Background Notification Clicked
     messaging().onNotificationOpenedApp(remoteMessage => {
       if (remoteMessage) {

@@ -125,22 +125,22 @@ export default function Setting() {
 
   useEffect(() => {
     if (userSettingList) {
-      setEnabled(userSettingList?.shift_alarm_enabled == 0 ? true : false);
+      setEnabled(userSettingList?.shift_alarm_enabled == 0 ? false : true);
       const data = {
         shift_alarm_enabled:
-          userSettingList?.shift_alarm_enabled == 0 ? true : false,
+          userSettingList?.shift_alarm_enabled == 0 ? false : true,
         dashboard_notification:
-          userSettingList?.dashboard_notification == 0 ? true : false,
+          userSettingList?.dashboard_notification == 0 ? false : true,
         email_dashboard_notification:
-          userSettingList?.email_dashboard_notification == 0 ? true : false,
+          userSettingList?.email_dashboard_notification == 0 ? false : true,
         message_notification:
-          userSettingList?.message_notification == 0 ? true : false,
+          userSettingList?.message_notification == 0 ? false : true,
         email_message_notification:
-          userSettingList?.email_message_notification == 0 ? true : false,
+          userSettingList?.email_message_notification == 0 ? false : true,
         newsfeed_notification:
-          userSettingList?.newsfeed_notification == 0 ? true : false,
+          userSettingList?.newsfeed_notification == 0 ? false : true,
         email_newsfeed_notification:
-          userSettingList?.email_newsfeed_notification == 0 ? true : false,
+          userSettingList?.email_newsfeed_notification == 0 ? false : true,
         shift_alarm_minutes: userSettingList?.shift_alarm_minutes,
       };
       if (data) {

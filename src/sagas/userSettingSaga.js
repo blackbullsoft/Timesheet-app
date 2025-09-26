@@ -58,18 +58,18 @@ function* updateUserSettingSaga(action) {
     console.log('userSettingList', userSettingList);
     const payloadData = {
       token: action.payload.fcmToken,
-      shift_alarm_enabled: userSettingList?.shift_alarm_enabled ? 0 : 1,
-      dashboard_notification: userSettingList?.dashboard_notification ? 0 : 1,
+      shift_alarm_enabled: userSettingList?.shift_alarm_enabled ? 1 : 0,
+      dashboard_notification: userSettingList?.dashboard_notification ? 1 : 0,
       email_dashboard_notification:
-        userSettingList?.email_dashboard_notification ? 0 : 1,
-      message_notification: userSettingList?.message_notification ? 0 : 1,
+        userSettingList?.email_dashboard_notification ? 1 : 0,
+      message_notification: userSettingList?.message_notification ? 1 : 0,
       email_message_notification: userSettingList?.email_message_notification
-        ? 0
-        : 1,
-      newsfeed_notification: userSettingList?.newsfeed_notification ? 0 : 1,
+        ? 1
+        : 0,
+      newsfeed_notification: userSettingList?.newsfeed_notification ? 1 : 0,
       email_newsfeed_notification: userSettingList?.email_newsfeed_notification
-        ? 0
-        : 1,
+        ? 1
+        : 0,
       shift_alarm_minutes: parseInt(userSettingList?.shift_alarm_minutes),
     };
 
