@@ -6,7 +6,8 @@ import {showToast} from '../actions/toastAction';
 
 const API_BASE_URL = 'http://174.138.57.202:8000';
 
-function* newsFeedList() {
+function* newsFeedList(action) {
+  console.log('ActionNewsfeed', action.payload.page, action.payload);
   try {
     const token = yield call(getToken);
 
@@ -23,12 +24,13 @@ function* newsFeedList() {
 
     const response = yield call(
       axios.get,
-      `${API_BASE_URL}/newsfeed/post`,
+      `${API_BASE_URL}/newsfeed/post?page=${action.payload.page}&limit=10`,
       config,
     );
     const data = response?.data || [];
     console.log('new feed', data, token);
     yield put({type: 'FETCH_FEED_SUCCESS', payload: data});
+    return response?.data;
   } catch (error) {
     console.log(error);
     yield put({

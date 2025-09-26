@@ -13,7 +13,11 @@ import {useDispatch} from 'react-redux';
 import {createNavigationContainerRef} from '@react-navigation/native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import ScrollVIewComp from './src/pages/login/ScrollVIewComp';
-
+import notifee from '@notifee/react-native';
+import {
+  setupNotificationChannel,
+  showNotification,
+} from './src/component/noification/notificationService';
 export const navigationRef = createNavigationContainerRef();
 const Stack = createStackNavigator();
 
@@ -22,6 +26,7 @@ export default function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    setupNotificationChannel();
     const requestUserPermission = async () => {
       const authStatus = await messaging().requestPermission();
       const enabled =
@@ -33,6 +38,16 @@ export default function App() {
         getFcmToken();
       } else {
         console.log('❌ Notification permission denied.');
+      }
+    };
+
+    const requestPermission = async () => {
+      const settings = await notifee.requestPermission();
+
+      if (settings.authorizationStatus >= 1) {
+        console.log('✅ Notification permission granted');
+      } else {
+        console.log('❌ Notification permission denied');
       }
     };
 
@@ -48,6 +63,7 @@ export default function App() {
         console.log('⚠️ Error getting FCM token:', error);
       }
     };
+    requestPermission();
 
     requestUserPermission();
 
@@ -57,6 +73,7 @@ export default function App() {
       const body = remoteMessage?.notification?.body;
 
       dispatch(showToast('success', title, body));
+      await showNotification(title, body);
     });
 
     // Background Notification Clicked

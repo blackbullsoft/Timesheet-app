@@ -1,6 +1,6 @@
-export const newsFeedList = () => ({
+export const newsFeedList = (page, limit) => ({
   type: 'FETCH_FEED_REQUEST',
-  //   payload: {email, password, fcmToken},
+  payload: {page, limit},
 });
 
 export const likeAndDislike = newsFeedId => ({

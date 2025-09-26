@@ -45,6 +45,12 @@ function* loginUserSaga(action) {
       });
     }
 
+    console.log(
+      'LoginfcmToken',
+      fcmResponse,
+      isFcmTokenExists,
+      action.payload.fcmToken,
+    );
     yield put(showToast('success', 'Login Successful', 'Welcome back!'));
   } catch (error) {
     yield put({
@@ -63,7 +69,7 @@ function* loginUserSaga(action) {
 }
 
 function* socialLogin(action) {
-  // console.log('Social ogin', action);
+  console.log('Social ogin', action);
   try {
     const dataPayload = {
       googleToken: action.payload.googleToken,
@@ -101,16 +107,34 @@ function* socialLogin(action) {
     const existingFcmTokens = fcmResponse.data || [];
 
     const isFcmTokenExists = existingFcmTokens.some(
-      item => item.fcm_token === action.payload.fcmToken,
+      item => item.fcm_token && item.fcm_token === action.payload.fcmToken,
     );
 
+    console.log(
+      'fcmResponse',
+      fcmResponse,
+      'existingFcmTokens',
+      existingFcmTokens,
+      'isFcmTokenExists',
+      isFcmTokenExists,
+      action.payload.fcmToken,
+    );
     if (!isFcmTokenExists) {
-      yield call(axios.post, `${API_BASE_URL}/user/fcm`, {
+      const padata = {
+        userId: data?.userId,
+        fcmToken: action.payload.fcmToken,
+        userAgent,
+        deviceType,
+      };
+      console.log('fcmResponseexit', isFcmTokenExists, padata);
+
+      const postResponse = yield call(axios.post, `${API_BASE_URL}/user/fcm`, {
         userId: data?.userId,
         fcmToken: action.payload.fcmToken,
         userAgent,
         deviceType,
       });
+      console.log('fcmResponseexit', isFcmTokenExists, postResponse);
     }
 
     yield put(showToast('success', 'Login Successful', 'Welcome back!'));

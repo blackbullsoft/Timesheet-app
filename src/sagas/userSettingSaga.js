@@ -5,8 +5,8 @@ import {showToast} from '../actions/toastAction';
 
 const API_BASE_URL = 'http://174.138.57.202:8000';
 
-function* fetchUserSettingSaga() {
-  console.log('User setting');
+function* fetchUserSettingSaga(action) {
+  console.log('User setting', action.payload.fmcToken);
 
   try {
     const token = yield call(getToken);
@@ -24,7 +24,7 @@ function* fetchUserSettingSaga() {
 
     const response = yield call(
       axios.get,
-      `${API_BASE_URL}/user-settings`,
+      `${API_BASE_URL}/user-settings?token=${action.payload.fmcToken}`,
       config,
     );
     const data = response?.data || [];
@@ -40,8 +40,8 @@ function* fetchUserSettingSaga() {
 }
 
 function* updateUserSettingSaga(action) {
-  console.log('User setting');
-
+  console.log('Updateusersetting', action.payload);
+  let userSettingList = action.payload.data;
   try {
     const token = yield call(getToken);
 
@@ -55,23 +55,45 @@ function* updateUserSettingSaga(action) {
         'Content-Type': 'application/json',
       },
     };
+    console.log('userSettingList', userSettingList);
+    const payloadData = {
+      token: action.payload.fcmToken,
+      shift_alarm_enabled: userSettingList?.shift_alarm_enabled ? 0 : 1,
+      dashboard_notification: userSettingList?.dashboard_notification ? 0 : 1,
+      email_dashboard_notification:
+        userSettingList?.email_dashboard_notification ? 0 : 1,
+      message_notification: userSettingList?.message_notification ? 0 : 1,
+      email_message_notification: userSettingList?.email_message_notification
+        ? 0
+        : 1,
+      newsfeed_notification: userSettingList?.newsfeed_notification ? 0 : 1,
+      email_newsfeed_notification: userSettingList?.email_newsfeed_notification
+        ? 0
+        : 1,
+      shift_alarm_minutes: parseInt(userSettingList?.shift_alarm_minutes),
+    };
 
+    console.log('payloadData', payloadData);
     const response = yield call(
       axios.put,
       `${API_BASE_URL}/user-settings`,
 
-      {
-        conversation_id: action.payload.messagBody.conversation_id,
-        sender_id: action.payload.messagBody.sender_id,
-        message: action.payload.messagBody.message,
-      },
+      payloadData,
       config,
     );
-    const data = response?.data || [];
-    console.log('USer settting', data, token);
+    const data =
+      {
+        response: response?.data,
+        status: response.status,
+      } || [];
+    console.log('USer settting', response, token);
+    yield put(showToast('success', 'User Setting Save Successfully'));
+
     yield put({type: 'USER_SETTING_UPDATE_SUCCESS', payload: data});
   } catch (error) {
-    console.warn('user setting', error);
+    console.warn('user setting', error.response);
+    yield put(showToast('error', `${error.response.data.message}`));
+
     yield put({
       type: 'USER_SETTING_UPDATE_FAILED',
       payload: error?.response?.data?.error || 'Something went wrong!',

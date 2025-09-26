@@ -8,8 +8,9 @@ import {
   RefreshControl,
   Touchable,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useEffect, useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import NewFeedPage from './NewsFeeds/NewFeedPage';
 import {useDispatch, useSelector} from 'react-redux';
 import {likeAndDislike, newsFeedList} from '../../../actions/newsfeedAction';
@@ -31,19 +32,30 @@ export default function Newsfeed() {
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [newsFeedDataList, setNewsFeedDataList] = React.useState([]);
-  const {newsFeedData, loading, like} = useSelector(state => state.newsFeed);
+  const {newsFeedData, like} = useSelector(state => state.newsFeed);
   const [newsFeedTheId, setNewsFeedTheId] = React.useState(null);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
 
-  const getNewsFeedData = () => {
-    dispatch(newsFeedList());
+  const [loadingMore, setLoadMore] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const getNewsFeedData = (page, limit) => {
+    dispatch(newsFeedList(page, limit));
   };
   useEffect(() => {
-    getNewsFeedData();
+    getNewsFeedData(page, limit);
   }, []);
 
   useEffect(() => {
     if (newsFeedData?.feeds.length > 0) {
-      setNewsFeedDataList(newsFeedData?.feeds);
+      setNewsFeedDataList(prev => {
+        const merged = [...prev, ...newsFeedData.feeds];
+        const unique = merged.filter(
+          (v, i, a) => a.findIndex(t => t.id === v.id) === i,
+        );
+        return unique;
+      });
+      setLoading(false);
     }
   }, [newsFeedData]);
 
@@ -82,7 +94,7 @@ export default function Newsfeed() {
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    getNewsFeedData();
+    getNewsFeedData(1, 10);
     // setTimeout(() => {
     //   setRefreshing(false);
     // }, 2000);
@@ -93,19 +105,7 @@ export default function Newsfeed() {
       setRefreshing(false);
     }
   }, [loading]);
-  // console.log('newsFeed all list', newsFeedData);
-  // console.log('like', like);
-  // const formatDateTime = dateString => {
-  //   const date = moment(dateString);
 
-  //   if (date.isSame(moment(), 'day')) {
-  //     // If it's today → show only time
-  //     return date.format('hh:mm A');
-  //   } else {
-  //     // If it's not today → show date + time
-  //     return date.format('DD-MM-YYYY hh:mm A');
-  //   }
-  // };
   const Card = ({item}) => {
     return (
       <>
@@ -226,9 +226,24 @@ export default function Newsfeed() {
     );
   };
 
+  const renderFooter = () => {
+    // if (!loadingMore || data.length < 8) return null; // Show footer loader only for subsequent pages
+    return <ActivityIndicator animating size="large" />;
+  };
+  const Button = () => {
+    if (newsFeedData?.feeds?.length != 0) {
+      setPage(page => page + 1);
+      setLimit(limit => limit + 10);
+      const newPage = page + 1;
+      const newLimit = limit + 10;
+      getNewsFeedData(newPage, newLimit);
+    }
+  };
+
+  console.log('loading', loading);
   return (
     <View style={styles.container}>
-      {!loading && newsFeedData?.feeds?.length === 0 && (
+      {!loading && newsFeedDataList?.length === 0 && (
         <View style={styles.container}>
           <Image source={calender} />
           <Text style={styles.heading}>No News Feed</Text>
@@ -250,8 +265,11 @@ export default function Newsfeed() {
           // data={newsFeedData?.feeds}
           data={newsFeedDataList}
           renderItem={({item}) => <Card item={item} />}
-          keyExtractor={i => i.id}
           contentContainerStyle={{paddingBottom: 20}}
+          keyExtractor={(item, index) => `${item.id}-${index}`}
+          onEndReached={Button}
+          ListFooterComponent={renderFooter}
+          onEndReachedThreshold={0.1}
         />
       )}
     </View>

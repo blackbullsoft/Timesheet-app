@@ -8,35 +8,54 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {Dropdown} from 'react-native-element-dropdown';
 import AntDesign from 'react-native-vector-icons/Entypo';
 
 import {
+  clearUpdateSettingResponse,
   fetchUserSettingRequest,
+  updateUserSettingRequest,
   userSetting,
 } from '../../../../actions/userSettingAction';
 import {Mincount} from '../../../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const rightGrey = require('../../../../assets/images/icon/rightGrey.png');
 
 export default function Setting() {
   const [isEnabled, setIsEnabled] = useState(false);
+  const [fcmToken, setFcmToken] = useState(null);
+  const {userSettingList, userSettingUpdate} = useSelector(
+    state => state.userSettings,
+  );
   const [isEnabledObject, setIsEnabledObject] = useState({
     messageSound: false,
     showWhenTyping: false,
     shiftSound: false,
-    enableShiftAlarm: false,
-    notifyViaPushDashboard: false,
-    notifyViaEmailDashboard: false,
-    notifyViaPushMessage: false,
-    notifyViaEmailMessage: false,
-    notifyViaPushNewsfeed: false,
-    notifyViaEmailNewsfeed: false,
+    shift_alarm_enabled: false,
+    dashboard_notification: false,
+    email_dashboard_notification: false,
+    message_notification: false,
+    email_message_notification: false,
+    newsfeed_notification: false,
+    email_newsfeed_notification: false,
+    shift_alarm_minutes: '',
   });
 
   const navigation = useNavigation();
-
+  const fetchFcmToken = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('fcmToken');
+      console.log('fcmmm', storedToken);
+      if (storedToken) {
+        setFcmToken(storedToken);
+        dispatch(fetchUserSettingRequest(storedToken));
+      }
+    } catch (error) {
+      console.error('Error retrieving FCM token:', error);
+    }
+  };
   const dispatch = useDispatch();
   const data = [
     {label: 'Check page', value: '1'},
@@ -45,32 +64,85 @@ export default function Setting() {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
 
-  const handleToggleSwitch = key => {
-    setIsEnabledObject(prevState => ({
-      ...prevState,
-      [key]: !prevState[key],
-    }));
+  const handleToggleSwitch = (key, value) => {
+    setIsEnabledObject(prevState => {
+      if (key === 'shift_alarm_minutes') {
+        return {
+          ...prevState,
+          [key]: value, // directly set given value
+        };
+      } else {
+        return {
+          ...prevState,
+          [key]: !prevState[key], // toggle
+        };
+      }
+    });
   };
 
-  console.log('isEnabledObject', isEnabledObject);
+  console.log(
+    'isEnabledObject',
+    isEnabledObject.shift_alarm_minutes.toString(),
+  );
 
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
   useEffect(() => {
     console.log('User settin enable');
-    dispatch(fetchUserSettingRequest());
+
+    fetchFcmToken();
   }, []);
+
+  const saveUserSetting = () => {
+    dispatch(updateUserSettingRequest(isEnabledObject, fcmToken));
+  };
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={() => console.log('')}>
+        <TouchableOpacity onPress={() => saveUserSetting()}>
           <Text style={{color: 'white', marginRight: 12}}>Save</Text>
         </TouchableOpacity>
       ),
     });
-  }, [navigation]);
-  //   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  }, [navigation, isEnabledObject]);
 
+  useEffect(() => {
+    if (userSettingList) {
+      const data = {
+        shift_alarm_enabled:
+          userSettingList?.shift_alarm_enabled == 0 ? true : false,
+        dashboard_notification:
+          userSettingList?.dashboard_notification == 0 ? true : false,
+        email_dashboard_notification:
+          userSettingList?.email_dashboard_notification == 0 ? true : false,
+        message_notification:
+          userSettingList?.message_notification == 0 ? true : false,
+        email_message_notification:
+          userSettingList?.email_message_notification == 0 ? true : false,
+        newsfeed_notification:
+          userSettingList?.newsfeed_notification == 0 ? true : false,
+        email_newsfeed_notification:
+          userSettingList?.email_newsfeed_notification == 0 ? true : false,
+        shift_alarm_minutes: userSettingList?.shift_alarm_minutes,
+      };
+      if (data) {
+        setIsEnabledObject(data);
+      }
+    }
+  }, [userSettingList]);
+
+  useEffect(() => {
+    if (userSettingUpdate && userSettingUpdate?.status == 200) {
+      dispatch(clearUpdateSettingResponse());
+
+      navigation.goBack();
+    }
+    // clearUpdateSettingResponse();
+  }, [userSettingUpdate]);
+
+  console.log('userSettingUpdate', userSettingUpdate);
+  //   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  console.log('userSettingList', isEnabledObject);
   return (
     <ScrollView>
       {/* <View style={styles.container}>
@@ -115,11 +187,11 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject.enableShiftAlarm ? '#ffffff' : '#f4f3f4'
+              isEnabledObject.shift_alarm_enabled ? '#ffffff' : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('enableShiftAlarm')}
-            value={isEnabledObject.enableShiftAlarm}
+            onValueChange={() => handleToggleSwitch('shift_alarm_enabled')}
+            value={isEnabledObject.shift_alarm_enabled}
           />
         </View>
         <View style={styles.box}>
@@ -144,13 +216,15 @@ export default function Setting() {
               labelField="value"
               autoScroll={false}
               valueField="value"
-              placeholder={!isFocus ? '1' : '1'}
+              // placeholder={!isFocus ? '1' : '1'}
+
               searchPlaceholder="Search..."
-              value={value || 1}
+              value={isEnabledObject?.shift_alarm_minutes.toString()}
               onFocus={() => setIsFocus(true)}
               onBlur={() => setIsFocus(false)}
               onChange={item => {
-                setValue(item.value);
+                // setValue(item.value);
+                handleToggleSwitch('shift_alarm_minutes', item.value);
                 setIsFocus(false);
               }}
               // renderRightIcon={() => (
@@ -181,11 +255,11 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject.notifyViaPushDashboard ? '#ffffff' : '#f4f3f4'
+              isEnabledObject.dashboard_notification ? '#ffffff' : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('notifyViaPushDashboard')}
-            value={isEnabledObject.notifyViaPushDashboard}
+            onValueChange={() => handleToggleSwitch('dashboard_notification')}
+            value={isEnabledObject.dashboard_notification}
           />
         </View>
         <View style={styles.box}>
@@ -193,11 +267,15 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject.notifyViaEmailDashboard ? '#ffffff' : '#f4f3f4'
+              isEnabledObject.email_dashboard_notification
+                ? '#ffffff'
+                : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('notifyViaEmailDashboard')}
-            value={isEnabledObject.notifyViaEmailDashboard}
+            onValueChange={() =>
+              handleToggleSwitch('email_dashboard_notification')
+            }
+            value={isEnabledObject.email_dashboard_notification}
           />
         </View>
       </View>
@@ -216,11 +294,11 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject.notifyViaPushMessage ? '#ffffff' : '#f4f3f4'
+              isEnabledObject.message_notification ? '#ffffff' : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('notifyViaPushMessage')}
-            value={isEnabledObject.notifyViaPushMessage}
+            onValueChange={() => handleToggleSwitch('message_notification')}
+            value={isEnabledObject.message_notification}
           />
         </View>
         <View style={styles.box}>
@@ -228,11 +306,15 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject?.notifyViaEmailMessage ? '#ffffff' : '#f4f3f4'
+              isEnabledObject?.email_message_notification
+                ? '#ffffff'
+                : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('notifyViaEmailMessage')}
-            value={isEnabledObject?.notifyViaEmailMessage}
+            onValueChange={() =>
+              handleToggleSwitch('email_message_notification')
+            }
+            value={isEnabledObject?.email_message_notification}
           />
         </View>
       </View>
@@ -251,11 +333,11 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject?.notifyViaPushNewsfeed ? '#ffffff' : '#f4f3f4'
+              isEnabledObject?.newsfeed_notification ? '#ffffff' : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('notifyViaPushNewsfeed')}
-            value={isEnabledObject?.notifyViaPushNewsfeed}
+            onValueChange={() => handleToggleSwitch('newsfeed_notification')}
+            value={isEnabledObject?.newsfeed_notification}
           />
         </View>
         <View style={styles.box}>
@@ -263,11 +345,15 @@ export default function Setting() {
           <Switch
             trackColor={{false: '#767577', true: '#81b0ff'}}
             thumbColor={
-              isEnabledObject?.notifyViaEmailNewsfeed ? '#ffffff' : '#f4f3f4'
+              isEnabledObject?.email_newsfeed_notification
+                ? '#ffffff'
+                : '#f4f3f4'
             }
             ios_backgroundColor="#3e3e3e"
-            onValueChange={() => handleToggleSwitch('notifyViaEmailNewsfeed')}
-            value={isEnabledObject?.notifyViaEmailNewsfeed}
+            onValueChange={() =>
+              handleToggleSwitch('email_newsfeed_notification')
+            }
+            value={isEnabledObject?.email_newsfeed_notification}
           />
         </View>
       </View>

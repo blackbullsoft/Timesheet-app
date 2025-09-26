@@ -3,9 +3,9 @@ export const loginUser = (email, password, fcmToken) => ({
   payload: {email, password, fcmToken},
 });
 
-export const socialLogin = (googleToken, userInfo) => ({
+export const socialLogin = (googleToken, userInfo, fcmToken) => ({
   type: 'USER_SOCIAL_LOGIN_REQUEST',
-  payload: {googleToken, userInfo},
+  payload: {googleToken, userInfo, fcmToken},
 });
 export const alreadyLoginUser = () => ({
   type: 'USER_LOGIN_ALREADY',

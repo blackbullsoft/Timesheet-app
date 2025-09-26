@@ -65,7 +65,8 @@ export default function SignUp() {
       };
       const token = userInfo?.data?.idToken;
       if (dataOBject.email != null) {
-        dispatch(socialLogin(token, dataOBject));
+        console.log('fcmtokene');
+        dispatch(socialLogin(token, dataOBject, fcmToken));
       }
     } catch (error) {
       console.error(error);

@@ -19,9 +19,12 @@ const userSettingReducer = (state = initialState, action) => {
     case 'USER_SETTING_UPDATE_REQUEST':
       return {...state, loading: true};
     case 'USER_SETTING_UPDATE_SUCCESS':
-      return {...state, userSettingList: action.payload, loading: false};
+      return {...state, userSettingUpdate: action.payload, loading: false};
     case 'USER_SETTING_UPDATE_FAILED':
       return {...state, error: action.payload, loading: false};
+
+    case 'CLEAR_USER_SETTING_RESPONSE':
+      return {...state, userSettingUpdate: null};
 
     default:
       return state;
